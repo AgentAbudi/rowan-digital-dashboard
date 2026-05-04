@@ -3,606 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rowan Digital - Project Management Dashboard</title>
+    <title>Surestone Development — Data Center Portfolio</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
     <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
       *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:'Inter',system-ui,sans-serif}
-      ::-webkit-scrollbar{width:6px}
+      body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#e2e8f0;overflow-x:hidden}
+      ::-webkit-scrollbar{width:5px;height:5px}
       ::-webkit-scrollbar-track{background:transparent}
-      ::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
-      .fade-in{animation:fadeIn .3s ease-in}
-      @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-      .kpi-hover:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.25)}
-      .kpi-hover{transition:all .2s ease}
+      ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+      .fade-in{animation:fadeIn .3s ease-out}
+      @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+      @keyframes spin{to{transform:rotate(360deg)}}
       .pulse-dot{animation:pulse 2s infinite}
-      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+      .card-hover{transition:all .2s ease}
+      .card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+      .tooltip-custom{position:relative}
+      .tooltip-custom:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1e293b;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:11px;white-space:nowrap;z-index:50;border:1px solid #334155}
+      .integration-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;background:#1a2332;border:1px solid #2a3a4a;color:#94a3b8;cursor:default}
+      .integration-badge:hover{background:#1e293b;border-color:#3b82f6;color:#93c5fd}
+      .rag-green{color:#22c55e}.rag-amber{color:#f59e0b}.rag-red{color:#ef4444}
+      .bg-rag-green{background:#22c55e}.bg-rag-amber{background:#f59e0b}.bg-rag-red{background:#ef4444}
+      .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.3px}
+      .badge-green{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+      .badge-amber{background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+      .badge-red{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+      .badge-blue{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+      .section-card{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:16px}
+      .kpi-card{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:14px 16px;min-width:120px}
+      .nav-tab{padding:8px 18px;font-size:13px;font-weight:500;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+      .nav-tab:hover{color:#e2e8f0}
+      .nav-tab.active{color:#3b82f6;border-bottom-color:#3b82f6}
+      .progress-bar{height:6px;border-radius:3px;background:#1e293b;overflow:hidden;position:relative}
+      .progress-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+      table.data-table{width:100%;border-collapse:collapse;font-size:12px}
+      table.data-table th{text-align:left;padding:8px 10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:10px;border-bottom:1px solid #1e293b}
+      table.data-table td{padding:7px 10px;border-bottom:1px solid rgba(30,41,59,.5);color:#cbd5e1}
+      table.data-table tr:hover td{background:rgba(30,41,59,.3)}
+      .project-card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:all .25s}
+      .project-card:hover{border-color:#334155;box-shadow:0 4px 20px rgba(0,0,0,.3);transform:translateY(-2px)}
+      .project-card .left-stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+      .domain-icon{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+      .legend-overlay{position:fixed;top:0;right:0;bottom:0;width:420px;background:#111827;border-left:1px solid #1e293b;z-index:100;overflow-y:auto;padding:24px;box-shadow:-8px 0 30px rgba(0,0,0,.5)}
+      .health-gauge{position:relative;width:80px;height:80px}
+      .risk-cell{width:36px;height:28px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border-radius:3px}
     </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useMemo,useCallback} = React;
-const {LineChart,Line,AreaChart,Area,BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis,CartesianGrid,Tooltip,Legend,ResponsiveContainer,RadialBarChart,RadialBar} = Recharts;
+const {useState,useMemo,useCallback,useEffect,useRef} = React;
+const {LineChart,Line,AreaChart,Area,BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis,CartesianGrid,Tooltip,Legend:RLegend,ResponsiveContainer,RadialBarChart,RadialBar,ComposedChart,Scatter} = Recharts;
 
-// âââ SAMPLE DATA ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
+//  DATA — SURESTONE DEVELOPMENT COMPANY
+// ═══════════════════════════════════════════════════════════════
+const COMPANY = "Surestone Development";
+const COMPANY_SUB = "DATA CENTER DEVELOPMENT PORTFOLIO";
+const DATA_DATE = "Apr 27, 2026";
+const WEEK = "Week 17";
+
 const PROJECTS = [
   {
-    id:1, name:"Phoenix Edge DC-1", code:"PHX-DC1", location:"Phoenix, AZ", region:"Southwest",
-    client:"CloudScale Inc", phase:"Construction", deliveryModel:"EPC", capacity:50,
-    contractValue:285000000, budget:285000000, committed:210000000, actual:190500000, forecast:283000000,
-    progress:67, spi:0.94, cpi:0.98, status:"On Track",
-    trir:0.75, ltir:0.32, incidents:2, nearMisses:12, safetyObs:145,
-    openIssues:8, closedIssues:34, ncrCount:12, ncrClosed:9, inspPassRate:94, punchOpen:18, punchClosed:42,
-    rackTotal:1200, racksReady:744, commPct:35, mwDelivered:18,
-    powerStatus:"Switchgear Install", coolingStatus:"Chiller Plant 60%", ospPct:72, ispPct:45,
+    id:1, code:"THR01", name:"Al Thuraya", location:"Dubai, UAE", campus:"Al Thuraya Campus",
+    type:"Turnkey", phase:"Construction", contractValue:572000000, budget:572000000,
+    startDate:"Jan 15, 2025", completion:"Q4 2027", totalPower:"FBD", grossFloor:"~93 Sf",
+    tier:"-", halls:"-", upsConfig:"-", coolingType:"-", generator:"-", itLoad:"-",
+    spiHistory:[0.98,0.97,0.95,0.93], cpiVal:0.98, spiVal:0.93,
+    percentComplete:74, designComplete:100, constructionComplete:74,
+    eac:584000000, bac:572000000, trir:0.74, ifdStreak:54, nearMisses:1,
+    activeWorkers:218, targetWorkers:240,
+    openRFIs:8, highPriorityRFIs:2,
+    lleAtRisk:2, lleDetail:"Switchgear +14wks",
+    changeOrders:4, coImpact:8400000, coSchedule:"+12d",
+    inspectionPassRate:96,
     contingencyTotal:14250000, contingencyUsed:8500000,
-    coApproved:2500000, coPending:850000, coCount:5, coPendingCount:2,
-    pmName:"Sarah Mitchell", director:"James Rodriguez",
+    status:"At risk",
     risks:[
-      {desc:"Supply chain delays - power distribution equipment",prob:4,impact:5,status:"Active",owner:"Procurement"},
-      {desc:"Labor shortage in Phoenix metro",prob:3,impact:4,status:"Active",owner:"HR/Ops"},
-      {desc:"HVAC equipment lead time extended",prob:3,impact:4,status:"Mitigating",owner:"MEP Lead"},
-      {desc:"Concrete supply pricing volatility",prob:4,impact:3,status:"Monitoring",owner:"PM"},
-      {desc:"Commissioning schedule compression",prob:2,impact:5,status:"Monitoring",owner:"Cx Manager"}
+      {id:"R-01",desc:"Switchgear LLE — main LV boards not on site",cat:"Procurement",severity:"Critical",costImpact:"+$8M",schedImpact:"+14wk",owner:"Procurement Lead",mitigation:"Dual sourcing — ABB & Eaton quoted"},
+      {id:"R-02",desc:"Electrical permit — AHJ review overdue 18d",cat:"Regulatory",severity:"Critical",costImpact:"+$5M",schedImpact:"+11d",owner:"Engineering Lead",mitigation:"Legal review requested, meeting May 2"},
+      {id:"R-03",desc:"MEP routing conflict Level 2 BIM model",cat:"Design",severity:"High",costImpact:"+$1.8M",schedImpact:"+7d",owner:"Design Manager",mitigation:"BIM clash detection — revised drawing issued"},
+      {id:"R-04",desc:"Curtain wall sealant spec not confirmed",cat:"Design",severity:"High",costImpact:"+$0.6M",schedImpact:"+9d",owner:"Design Manager",mitigation:"RFI raised — awaiting client response"}
+    ],
+    rfis:[
+      {id:"R001",desc:"Switchgear room clearance — Hall A",priority:"High"},
+      {id:"R002",desc:"Electrical permit — AHJ review",priority:"High"},
+      {id:"R003",desc:"MEP routing conflict — Level 2",priority:"Med"},
+      {id:"R004",desc:"Curtain wall sealant spec",priority:"Med"},
+      {id:"R005",desc:"Rebar spacing — Grid C4",priority:"Low"}
+    ],
+    procurement:[
+      {po:"PO-7421",desc:"Main switchgear — 15kV LV boards (×4)",vendor:"ABB",value:4200000,leadTime:"52wk",orderDate:"Nov 5, 2025",delivery:"Critical delay",status:"Critical delay"},
+      {po:"PO-7388",desc:"Diesel generators — 2MW units (×6)",vendor:"Caterpillar",value:6800000,leadTime:"18wk",orderDate:"May 14, 2025",delivery:"Delivered",status:"Delivered"},
+      {po:"PO-7456",desc:"UPS systems — 2N redundant (×8)",vendor:"Eaton",value:5100000,leadTime:"24wk",orderDate:"Jul 28, 2025",delivery:"At risk",status:"At risk"},
+      {po:"PO-7398",desc:"Structural steel package — Hall B",vendor:"Nucor",value:12400000,leadTime:"14wk",orderDate:"Apr 28, 2025",delivery:"On site",status:"On site"},
+      {po:"PO-7471",desc:"Cooling tower units (×4)",vendor:"Evapco",value:3600000,leadTime:"20wk",orderDate:"Jun 23, 2025",delivery:"Ordered",status:"Ordered"},
+      {po:"PO-7482",desc:"Curtain wall glazing — Hall A",vendor:"Guardian",value:2800000,leadTime:"12wk",orderDate:"Aug 4, 2025",delivery:"Ordered",status:"Ordered"}
     ],
     milestones:[
-      {name:"Site Prep Complete",planned:"2025-03-30",actual:"2025-03-28",status:"completed"},
-      {name:"Foundation Pour",planned:"2025-06-15",actual:"2025-06-20",status:"completed"},
-      {name:"Steel Erection",planned:"2025-09-01",actual:"2025-09-15",status:"completed"},
-      {name:"Building Envelope",planned:"2025-12-15",actual:null,status:"in-progress",pct:78},
-      {name:"MEP Rough-In",planned:"2026-03-30",actual:null,status:"in-progress",pct:35},
-      {name:"Power System Energize",planned:"2026-07-15",actual:null,status:"planned"},
-      {name:"L5 Commissioning",planned:"2026-10-01",actual:null,status:"planned"},
-      {name:"Tenant Handover",planned:"2026-12-15",actual:null,status:"planned"}
+      {name:"Site prep & foundation",status:"Complete",date:null},
+      {name:"Steel erection — Hall A",status:"Complete",date:null},
+      {name:"Steel erection — Hall B",status:"In progress",date:"Rk 18"},
+      {name:"Switchgear procurement",status:"BLOCKED",date:"+14wk lead time · Owner: Aaron Norris"},
+      {name:"MEP rough-in Hall A",status:"At risk",date:"Rk 28 — at risk"},
+      {name:"Systems commissioning",status:"Planned",date:"Q3 2027"}
     ],
-    longLead:[
-      {item:"Transformers 3x500kVA",vendor:"ABB",due:"2026-02-28",status:"In Transit"},
-      {item:"CRAH Units (10x)",vendor:"Vertiv",due:"2026-03-15",status:"Manufacturing"},
-      {item:"UPS Systems 2x750kW",vendor:"Eaton",due:"2026-01-30",status:"Delivered"},
-      {item:"Generator Sets 4x2MW",vendor:"Caterpillar",due:"2026-04-15",status:"Manufacturing"}
+    lookAhead:[
+      {name:"Foundation — Halls A & B",status:"Complete",pct:100},
+      {name:"Steel erection — Hall A",status:"Complete",pct:100},
+      {name:"Steel erection — Hall B",status:"In progress",pct:72},
+      {name:"MEP rough-in — Hall A, Fl 1",status:"In progress",pct:55},
+      {name:"Switchgear procurement",status:"BLOCKED",pct:0},
+      {name:"Curtain wall — Hall A",status:"Monitor",pct:30},
+      {name:"Electrical permit — AHJ",status:"Overdue",pct:0},
+      {name:"Roof decking — Hall B",status:"Planned",pct:0}
     ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:22800000,committed:20500000,actual:18200000,forecast:22500000},
-      {code:"02",desc:"Site Work & Civil",budget:31350000,committed:29000000,actual:27500000,forecast:31000000},
-      {code:"03",desc:"Structural / Concrete",budget:42750000,committed:40000000,actual:38500000,forecast:42500000},
-      {code:"04",desc:"Building Envelope",budget:28500000,committed:25000000,actual:20000000,forecast:28200000},
-      {code:"05",desc:"Mechanical / HVAC",budget:45600000,committed:35000000,actual:28000000,forecast:45000000},
-      {code:"06",desc:"Electrical / Power",budget:57000000,committed:32000000,actual:25000000,forecast:56500000},
-      {code:"07",desc:"Fire Protection",budget:14250000,committed:12000000,actual:10000000,forecast:14000000},
-      {code:"08",desc:"IT Infrastructure",budget:22800000,committed:10000000,actual:8000000,forecast:22500000},
-      {code:"09",desc:"Commissioning",budget:11400000,committed:4000000,actual:2000000,forecast:11300000},
-      {code:"10",desc:"Contingency",budget:8550000,committed:2500000,actual:3300000,forecast:9500000}
+    evmData:[
+      {m:"Jan",pv:20000000,ev:20000000,ac:19000000},{m:"Feb",pv:45000000,ev:44000000,ac:43000000},
+      {m:"Mar",pv:80000000,ev:78000000,ac:77000000},{m:"Apr",pv:120000000,ev:116000000,ac:115000000},
+      {m:"May",pv:165000000,ev:158000000,ac:160000000},{m:"Jun",pv:210000000,ev:200000000,ac:205000000},
+      {m:"Jul",pv:255000000,ev:240000000,ac:248000000},{m:"Aug",pv:300000000,ev:280000000,ac:290000000},
+      {m:"Sep",pv:340000000,ev:315000000,ac:328000000},{m:"Oct",pv:375000000,ev:345000000,ac:360000000},
+      {m:"Nov",pv:405000000,ev:375000000,ac:390000000},{m:"Dec",pv:430000000,ev:400000000,ac:415000000},
+      {m:"Jan 26",pv:455000000,ev:420000000,ac:430000000},{m:"Feb",pv:475000000,ev:440000000,ac:445000000},
+      {m:"Mar",pv:495000000,ev:455000000,ac:460000000},{m:"Apr",pv:510000000,ev:465000000,ac:470000000},
+      {m:"Apr*",pv:520000000,ev:null,ac:null,eacFc:480000000},{m:"May",pv:535000000,ev:null,ac:null,eacFc:500000000},
+      {m:"Jun",pv:548000000,ev:null,ac:null,eacFc:520000000},{m:"Jul",pv:558000000,ev:null,ac:null,eacFc:540000000},
+      {m:"Aug",pv:565000000,ev:null,ac:null,eacFc:555000000},{m:"Sep",pv:570000000,ev:null,ac:null,eacFc:570000000},
+      {m:"Oct",pv:572000000,ev:null,ac:null,eacFc:584000000}
     ],
-    evm:[
-      {month:"Nov 25",pv:32000000,ev:30500000,ac:31000000},
-      {month:"Dec 25",pv:58000000,ev:55000000,ac:56000000},
-      {month:"Jan 26",pv:88000000,ev:84000000,ac:85000000},
-      {month:"Feb 26",pv:125000000,ev:120000000,ac:122000000},
-      {month:"Mar 26",pv:168000000,ev:160000000,ac:163000000},
-      {month:"Apr 26",pv:202000000,ev:190500000,ac:190500000}
+    cashFlow:[{q:"Q1",planned:120000000,actual:115000000},{q:"Q2",planned:140000000,actual:135000000},{q:"Q3",planned:155000000,actual:150000000},{q:"Q4 Fcst",planned:160000000,actual:null,forecast:168000000}],
+    tradeProgress:{MEP:60,Steel:74,Electrical:60,Civil:88},
+    equipment:[{name:"Tower crane A",status:"ACTIVE"},{name:"Tower crane B",status:"ACTIVE"},{name:"Concrete pump 1",status:"ACTIVE"},{name:"Concrete pump 2",status:"MAINT"}],
+    workforce:{MEP:35,Steel:30,Electrical:20,Civil:15},
+    actions:[
+      {text:"Escalate switchgear procurement — dual source approval",owner:"A. Norris",due:"Due Apr 28 — URGENT",done:false},
+      {text:"Electrical permit AHJ — legal review requested",owner:"K. Hanson",due:"Due Apr 30",done:false},
+      {text:"Approve CO-061 — MEP rerouting $2.1M",owner:"D. Clapps",due:"Due May 3",done:false}
     ],
-    cashflow:[
-      {month:"Jul 25",planned:8000000,actual:7500000},{month:"Aug 25",planned:15000000,actual:14200000},
-      {month:"Sep 25",planned:24000000,actual:23000000},{month:"Oct 25",planned:35000000,actual:33500000},
-      {month:"Nov 25",planned:48000000,actual:46000000},{month:"Dec 25",planned:65000000,actual:62000000},
-      {month:"Jan 26",planned:85000000,actual:82000000},{month:"Feb 26",planned:110000000,actual:107000000},
-      {month:"Mar 26",planned:140000000,actual:135000000},{month:"Apr 26",planned:170000000,actual:165000000},
-      {month:"May 26",planned:205000000,actual:null},{month:"Jun 26",planned:240000000,actual:null}
-    ],
-    docs:{rfis:14,rfisOpen:2,submittals:34,submittalsOpen:4,drawings:156,drawingsRev:12}
+    personnel:{cdco:"—",pm:"—",constructionMgr:"—",designMgr:"—",srDrPm:"—",procurementLead:"—",safetyMgr:"—",costControl:"—",scheduler:"—",ownerRep:"—",techAuth:"—",structEng:"—",mepEng:"—",mainContractor:"—",steelContractor:"—",elecContractor:"—"},
+    budgetPctUsed: undefined,
+    schedule_rag:"Lagging", cost_rag:"Overspend", safety_rag:"On track", overall_rag:"At risk"
   },
   {
-    id:2, name:"Dallas Metro Hub", code:"DAL-HUB", location:"Dallas, TX", region:"South",
-    client:"DataVault Corp", phase:"Construction", deliveryModel:"Design-Build", capacity:35,
-    contractValue:195000000, budget:195000000, committed:130000000, actual:87750000, forecast:198000000,
-    progress:45, spi:0.92, cpi:0.95, status:"At Risk",
-    trir:0.88, ltir:0.44, incidents:3, nearMisses:15, safetyObs:128,
-    openIssues:12, closedIssues:28, ncrCount:8, ncrClosed:5, inspPassRate:91, punchOpen:24, punchClosed:31,
-    rackTotal:850, racksReady:298, commPct:10, mwDelivered:8,
-    powerStatus:"Utility Feed Complete", coolingStatus:"Chiller Procurement", ospPct:55, ispPct:20,
-    contingencyTotal:9750000, contingencyUsed:5850000,
-    coApproved:1800000, coPending:1200000, coCount:4, coPendingCount:3,
-    pmName:"Michael Chen", director:"James Rodriguez",
+    id:2, code:"ZNZ01", name:"Zanzibar 1", location:"Zanzibar, Tanzania", campus:"Zanzibar Campus",
+    type:"Turnkey", phase:"Construction", contractValue:634000000, budget:634000000,
+    startDate:"Mar 1, 2025", completion:"Q2 2027",
+    spiHistory:[0.92,0.90,0.88,0.86], cpiVal:0.91, spiVal:0.86,
+    percentComplete:61, designComplete:100, constructionComplete:61,
+    eac:695000000, bac:634000000, trir:0.91,
+    activeWorkers:195, targetWorkers:220,
+    openRFIs:6, highPriorityRFIs:3, lleAtRisk:1, lleDetail:"Generators +8wks",
+    changeOrders:6, coImpact:12000000, coSchedule:"+18d",
+    inspectionPassRate:92, contingencyTotal:18000000, contingencyUsed:12000000,
+    status:"Critical",
     risks:[
-      {desc:"Soil conditions causing foundation rework",prob:4,impact:4,status:"Active",owner:"Geotech"},
-      {desc:"Electrical substation capacity shortfall",prob:3,impact:5,status:"Active",owner:"Electrical Lead"},
-      {desc:"Material price escalation - steel/copper",prob:4,impact:3,status:"Monitoring",owner:"Procurement"},
-      {desc:"Workforce turnover mid-build",prob:3,impact:3,status:"Active",owner:"HR"},
-      {desc:"Schedule compression risk for MEP",prob:3,impact:4,status:"Mitigating",owner:"PM"}
+      {id:"R-01",desc:"Generator delivery delay — customs hold",cat:"Procurement",severity:"Critical",costImpact:"+$6M",schedImpact:"+8wk",owner:"Procurement Lead",mitigation:"Expediting with port authority"},
+      {id:"R-02",desc:"Foundation settlement — Hall B sector 3",cat:"Structural",severity:"High",costImpact:"+$3M",schedImpact:"+14d",owner:"Structural Eng",mitigation:"Geotechnical review underway"},
+      {id:"R-03",desc:"Labor shortage — electrical trades",cat:"Resources",severity:"High",costImpact:"+$2M",schedImpact:"+10d",owner:"Construction Mgr",mitigation:"Subcontractor mobilization from mainland"},
+      {id:"R-04",desc:"Permit renewal pending — environmental",cat:"Regulatory",severity:"Medium",costImpact:"+$0.5M",schedImpact:"+5d",owner:"PM",mitigation:"Application submitted, awaiting review"}
     ],
-    milestones:[
-      {name:"Design Complete",planned:"2025-04-30",actual:"2025-05-10",status:"completed"},
-      {name:"Site Mobilization",planned:"2025-06-30",actual:"2025-07-05",status:"completed"},
-      {name:"Structural Steel",planned:"2025-11-30",actual:null,status:"in-progress",pct:60},
-      {name:"MEP Rough-In",planned:"2026-04-30",actual:null,status:"in-progress",pct:15},
-      {name:"Electrical Energization",planned:"2026-08-15",actual:null,status:"planned"},
-      {name:"Commissioning Start",planned:"2026-09-01",actual:null,status:"planned"},
-      {name:"Substantial Completion",planned:"2026-12-31",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"UPS Battery Systems",vendor:"Eaton",due:"2026-04-15",status:"In Transit"},
-      {item:"Modular Cooling Units",vendor:"Vertiv",due:"2026-05-01",status:"Manufacturing"},
-      {item:"Switchgear Assembly",vendor:"Schneider",due:"2026-03-01",status:"Manufacturing"}
-    ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:15600000,committed:14000000,actual:12000000,forecast:15800000},
-      {code:"02",desc:"Site Work & Civil",budget:21450000,committed:20000000,actual:18000000,forecast:21500000},
-      {code:"03",desc:"Structural",budget:29250000,committed:27000000,actual:22000000,forecast:29500000},
-      {code:"04",desc:"Envelope",budget:19500000,committed:15000000,actual:10000000,forecast:19800000},
-      {code:"05",desc:"Mechanical",budget:31200000,committed:22000000,actual:12000000,forecast:32000000},
-      {code:"06",desc:"Electrical",budget:39000000,committed:18000000,actual:8000000,forecast:39500000},
-      {code:"07",desc:"Fire Protection",budget:9750000,committed:7000000,actual:3000000,forecast:9800000},
-      {code:"08",desc:"IT Infrastructure",budget:15600000,committed:5000000,actual:1500000,forecast:15800000},
-      {code:"09",desc:"Commissioning",budget:7800000,committed:1000000,actual:250000,forecast:7800000},
-      {code:"10",desc:"Contingency",budget:5850000,committed:1000000,actual:1000000,forecast:6500000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:18000000,ev:16500000,ac:17200000},
-      {month:"Dec 25",pv:32000000,ev:29000000,ac:30500000},
-      {month:"Jan 26",pv:48000000,ev:44000000,ac:46000000},
-      {month:"Feb 26",pv:62000000,ev:57000000,ac:60000000},
-      {month:"Mar 26",pv:78000000,ev:72000000,ac:75000000},
-      {month:"Apr 26",pv:95000000,ev:87750000,ac:87750000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:5000000,actual:4800000},{month:"Aug 25",planned:10000000,actual:9500000},
-      {month:"Sep 25",planned:18000000,actual:17000000},{month:"Oct 25",planned:28000000,actual:26500000},
-      {month:"Nov 25",planned:40000000,actual:38000000},{month:"Dec 25",planned:52000000,actual:50000000},
-      {month:"Jan 26",planned:62000000,actual:60000000},{month:"Feb 26",planned:72000000,actual:70000000},
-      {month:"Mar 26",planned:82000000,actual:80000000},{month:"Apr 26",planned:92000000,actual:87750000},
-      {month:"May 26",planned:110000000,actual:null},{month:"Jun 26",planned:130000000,actual:null}
-    ],
-    docs:{rfis:22,rfisOpen:6,submittals:28,submittalsOpen:8,drawings:120,drawingsRev:18}
+    tradeProgress:{MEP:45,Steel:68,Electrical:38,Civil:82},
+    cashFlow:[{q:"Q1",planned:150000000,actual:142000000},{q:"Q2",planned:170000000,actual:160000000},{q:"Q3",planned:180000000,actual:null,forecast:185000000},{q:"Q4 Fcst",planned:140000000,actual:null,forecast:148000000}],
+    milestones:[{name:"Site prep & piling",status:"Complete"},{name:"Foundation — all halls",status:"Complete"},{name:"Steel erection — Hall A",status:"In progress",date:"72%"},{name:"Generator delivery",status:"BLOCKED"},{name:"MEP rough-in",status:"Planned"},{name:"Commissioning",status:"Planned",date:"Q2 2027"}],
+    lookAhead:[{name:"Steel erection — Hall A",status:"In progress",pct:72},{name:"Foundation remediation — Hall B",status:"In progress",pct:40},{name:"Generator customs clearance",status:"BLOCKED",pct:0},{name:"Electrical rough-in — Hall A",status:"Planned",pct:0}],
+    schedule_rag:"Critical", cost_rag:"Critical", safety_rag:"On track", overall_rag:"Critical"
   },
   {
-    id:3, name:"Ashburn VA Campus", code:"ASH-VA", location:"Ashburn, VA", region:"Northeast",
-    client:"HyperCloud Systems", phase:"Design", deliveryModel:"PMCM", capacity:80,
-    contractValue:420000000, budget:420000000, committed:85000000, actual:63000000, forecast:425000000,
-    progress:15, spi:1.02, cpi:0.99, status:"On Track",
-    trir:0.45, ltir:0.0, incidents:0, nearMisses:5, safetyObs:45,
-    openIssues:15, closedIssues:18, ncrCount:2, ncrClosed:1, inspPassRate:98, punchOpen:3, punchClosed:8,
-    rackTotal:2400, racksReady:0, commPct:0, mwDelivered:0,
-    powerStatus:"Design Phase", coolingStatus:"Design Phase", ospPct:8, ispPct:2,
-    contingencyTotal:21000000, contingencyUsed:2100000,
-    coApproved:3200000, coPending:1800000, coCount:3, coPendingCount:2,
-    pmName:"Emily Watson", director:"Patricia Gomez",
-    risks:[
-      {desc:"Client design approval timeline slippage",prob:3,impact:5,status:"Active",owner:"Design Lead"},
-      {desc:"Zoning and environmental permit delays",prob:3,impact:4,status:"Monitoring",owner:"Legal"},
-      {desc:"Market contractor availability at bid time",prob:4,impact:3,status:"Monitoring",owner:"Procurement"},
-      {desc:"Technology spec evolution mid-design",prob:4,impact:4,status:"Active",owner:"Client/PM"},
-      {desc:"Utility interconnection agreement timeline",prob:3,impact:5,status:"Active",owner:"Utilities Lead"}
-    ],
-    milestones:[
-      {name:"Concept Design",planned:"2025-03-31",actual:"2025-03-25",status:"completed"},
-      {name:"Schematic Design",planned:"2025-07-31",actual:null,status:"in-progress",pct:65},
-      {name:"Design Development",planned:"2025-11-30",actual:null,status:"planned"},
-      {name:"Construction Docs",planned:"2026-03-31",actual:null,status:"planned"},
-      {name:"Permitting",planned:"2026-06-30",actual:null,status:"planned"},
-      {name:"Construction Start",planned:"2026-09-01",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"Design Consultants Package",vendor:"Corgan",due:"2026-01-15",status:"In Progress"},
-      {item:"Geotech Investigation",vendor:"Terracon",due:"2025-10-01",status:"In Progress"},
-      {item:"Environmental Assessment",vendor:"ERM",due:"2025-12-15",status:"In Progress"}
-    ],
-    cbs:[
-      {code:"01",desc:"Design & Engineering",budget:42000000,committed:35000000,actual:28000000,forecast:42000000},
-      {code:"02",desc:"Permits & Fees",budget:12600000,committed:8000000,actual:5000000,forecast:12800000},
-      {code:"03",desc:"Site Acquisition & Prep",budget:33600000,committed:25000000,actual:20000000,forecast:34000000},
-      {code:"04",desc:"Construction (Est.)",budget:252000000,committed:12000000,actual:5000000,forecast:255000000},
-      {code:"05",desc:"Equipment",budget:50400000,committed:3000000,actual:2000000,forecast:51000000},
-      {code:"06",desc:"Contingency",budget:29400000,committed:2000000,actual:3000000,forecast:30200000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:8000000,ev:8200000,ac:8100000},
-      {month:"Dec 25",pv:16000000,ev:16500000,ac:16200000},
-      {month:"Jan 26",pv:26000000,ev:27000000,ac:26500000},
-      {month:"Feb 26",pv:38000000,ev:39000000,ac:38500000},
-      {month:"Mar 26",pv:50000000,ev:51000000,ac:50500000},
-      {month:"Apr 26",pv:62000000,ev:63000000,ac:63000000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:2000000,actual:1800000},{month:"Aug 25",planned:5000000,actual:4500000},
-      {month:"Sep 25",planned:9000000,actual:8500000},{month:"Oct 25",planned:14000000,actual:13500000},
-      {month:"Nov 25",planned:20000000,actual:19500000},{month:"Dec 25",planned:28000000,actual:27000000},
-      {month:"Jan 26",planned:36000000,actual:35000000},{month:"Feb 26",planned:44000000,actual:43000000},
-      {month:"Mar 26",planned:52000000,actual:51000000},{month:"Apr 26",planned:62000000,actual:63000000},
-      {month:"May 26",planned:72000000,actual:null},{month:"Jun 26",planned:85000000,actual:null}
-    ],
-    docs:{rfis:8,rfisOpen:3,submittals:15,submittalsOpen:6,drawings:85,drawingsRev:22}
+    id:3, code:"ZNZ02", name:"Zanzibar 2", location:"Zanzibar, Tanzania", campus:"Zanzibar Campus",
+    type:"Turnkey", phase:"Design", contractValue:480000000, budget:480000000,
+    spiHistory:[1.02,1.03,1.04,1.04], cpiVal:1.02, spiVal:1.04,
+    percentComplete:38, designComplete:38, constructionComplete:0,
+    eac:472000000, bac:480000000, trir:null,
+    activeWorkers:0, targetWorkers:0,
+    openRFIs:2, highPriorityRFIs:0, lleAtRisk:0, lleDetail:"—",
+    changeOrders:1, coImpact:500000, coSchedule:"0d",
+    inspectionPassRate:null, contingencyTotal:12000000, contingencyUsed:1500000,
+    status:"On track",
+    risks:[{id:"R-01",desc:"Design coordination delay — MEP vs structural",cat:"Design",severity:"Low",costImpact:"$0",schedImpact:"+3d",owner:"Design Manager",mitigation:"Weekly BIM coordination meetings"}],
+    tradeProgress:{MEP:0,Steel:0,Electrical:0,Civil:0},
+    cashFlow:[{q:"Q1",planned:40000000,actual:38000000},{q:"Q2",planned:55000000,actual:null,forecast:52000000},{q:"Q3",planned:70000000,actual:null,forecast:68000000},{q:"Q4 Fcst",planned:80000000,actual:null,forecast:78000000}],
+    milestones:[{name:"Concept design",status:"Complete"},{name:"Schematic design",status:"Complete"},{name:"DD — 60%",status:"In progress",date:"38%"},{name:"DD — 100%",status:"Planned"},{name:"Procurement",status:"Planned"},{name:"Construction start",status:"Planned",date:"Q1 2027"}],
+    lookAhead:[{name:"DD package — structural",status:"In progress",pct:45},{name:"DD package — MEP",status:"In progress",pct:30},{name:"Geotechnical survey",status:"Complete",pct:100}],
+    schedule_rag:"On track", cost_rag:"On budget", safety_rag:"N/A", overall_rag:"On track"
   },
   {
-    id:4, name:"Chicago Lakeside", code:"CHI-LS", location:"Chicago, IL", region:"Midwest",
-    client:"NetCore Solutions", phase:"Commissioning", deliveryModel:"EPC", capacity:25,
-    contractValue:145000000, budget:145000000, committed:140000000, actual:133400000, forecast:144500000,
-    progress:92, spi:0.98, cpi:1.01, status:"On Track",
-    trir:0.62, ltir:0.15, incidents:1, nearMisses:8, safetyObs:210,
-    openIssues:4, closedIssues:52, ncrCount:15, ncrClosed:14, inspPassRate:96, punchOpen:12, punchClosed:85,
-    rackTotal:600, racksReady:540, commPct:78, mwDelivered:22,
-    powerStatus:"Energized - Testing", coolingStatus:"Operational", ospPct:95, ispPct:88,
-    contingencyTotal:7250000, contingencyUsed:3200000,
-    coApproved:1200000, coPending:0, coCount:3, coPendingCount:0,
-    pmName:"David Park", director:"Patricia Gomez",
-    risks:[
-      {desc:"Commissioning punchlist volume",prob:3,impact:3,status:"Mitigating",owner:"Cx Manager"},
-      {desc:"Utility final inspection scheduling",prob:2,impact:4,status:"Monitoring",owner:"PM"},
-      {desc:"Tenant fit-out coordination",prob:3,impact:3,status:"Active",owner:"Client Liaison"},
-      {desc:"Winter weather impact on exterior work",prob:2,impact:2,status:"Monitoring",owner:"Site Super"},
-      {desc:"Final documentation compilation",prob:2,impact:2,status:"Active",owner:"Doc Control"}
-    ],
-    milestones:[
-      {name:"Construction Complete",planned:"2025-12-31",actual:"2026-01-05",status:"completed"},
-      {name:"L1-L3 Commissioning",planned:"2026-02-28",actual:"2026-03-05",status:"completed"},
-      {name:"L4 Integrated Testing",planned:"2026-04-15",actual:null,status:"in-progress",pct:60},
-      {name:"L5 Performance Testing",planned:"2026-05-31",actual:null,status:"planned"},
-      {name:"Tenant Handover",planned:"2026-06-30",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"Final BMS Integration",vendor:"Siemens",due:"2026-04-01",status:"In Progress"},
-      {item:"Network Switch Deployment",vendor:"Cisco",due:"2026-03-15",status:"Delivered"}
-    ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:11600000,committed:11500000,actual:11200000,forecast:11500000},
-      {code:"02",desc:"Site Work",budget:15950000,committed:15800000,actual:15500000,forecast:15800000},
-      {code:"03",desc:"Structural",budget:21750000,committed:21500000,actual:21000000,forecast:21500000},
-      {code:"04",desc:"Envelope",budget:14500000,committed:14400000,actual:14200000,forecast:14400000},
-      {code:"05",desc:"Mechanical",budget:23200000,committed:23000000,actual:22500000,forecast:23000000},
-      {code:"06",desc:"Electrical",budget:29000000,committed:28500000,actual:27500000,forecast:28800000},
-      {code:"07",desc:"Fire Protection",budget:7250000,committed:7200000,actual:7000000,forecast:7200000},
-      {code:"08",desc:"IT Infrastructure",budget:11600000,committed:11000000,actual:8500000,forecast:11300000},
-      {code:"09",desc:"Commissioning",budget:5800000,committed:4800000,actual:3500000,forecast:5700000},
-      {code:"10",desc:"Contingency",budget:4350000,committed:2300000,actual:2500000,forecast:5300000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:108000000,ev:106000000,ac:105000000},
-      {month:"Dec 25",pv:115000000,ev:113000000,ac:112000000},
-      {month:"Jan 26",pv:122000000,ev:120000000,ac:118000000},
-      {month:"Feb 26",pv:128000000,ev:126000000,ac:124000000},
-      {month:"Mar 26",pv:133000000,ev:131000000,ac:129000000},
-      {month:"Apr 26",pv:136000000,ev:133400000,ac:133400000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:92000000,actual:90000000},{month:"Aug 25",planned:96000000,actual:94000000},
-      {month:"Sep 25",planned:100000000,actual:98000000},{month:"Oct 25",planned:105000000,actual:103000000},
-      {month:"Nov 25",planned:110000000,actual:108000000},{month:"Dec 25",planned:115000000,actual:113000000},
-      {month:"Jan 26",planned:120000000,actual:118000000},{month:"Feb 26",planned:125000000,actual:123000000},
-      {month:"Mar 26",planned:130000000,actual:128000000},{month:"Apr 26",planned:135000000,actual:133400000},
-      {month:"May 26",planned:140000000,actual:null},{month:"Jun 26",planned:144500000,actual:null}
-    ],
-    docs:{rfis:42,rfisOpen:1,submittals:68,submittalsOpen:2,drawings:220,drawingsRev:5}
+    id:4, code:"RYD01", name:"Riyadh 1", location:"Riyadh, Saudi Arabia", campus:"Riyadh Campus",
+    type:"Turnkey", phase:"Design", contractValue:510000000, budget:510000000,
+    spiHistory:[0.96,0.97,0.97,0.97], cpiVal:0.99, spiVal:0.97,
+    percentComplete:22, designComplete:22, constructionComplete:0,
+    eac:515000000, bac:510000000, trir:null,
+    activeWorkers:0, targetWorkers:0,
+    openRFIs:3, highPriorityRFIs:1, lleAtRisk:0, lleDetail:"—",
+    changeOrders:0, coImpact:0, coSchedule:"0d",
+    inspectionPassRate:null, contingencyTotal:15000000, contingencyUsed:2000000,
+    status:"At risk",
+    risks:[{id:"R-01",desc:"Scope change — client requesting additional hall",cat:"Scope",severity:"Medium",costImpact:"+$40M",schedImpact:"+60d",owner:"PM",mitigation:"Change order in negotiation"},{id:"R-02",desc:"Zoning approval delayed",cat:"Regulatory",severity:"Medium",costImpact:"+$1M",schedImpact:"+14d",owner:"PM",mitigation:"Liaison with municipality"}],
+    tradeProgress:{MEP:0,Steel:0,Electrical:0,Civil:0},
+    cashFlow:[{q:"Q1",planned:30000000,actual:28000000},{q:"Q2",planned:45000000,actual:null,forecast:44000000},{q:"Q3",planned:60000000,actual:null,forecast:58000000},{q:"Q4 Fcst",planned:70000000,actual:null,forecast:68000000}],
+    milestones:[{name:"Concept design",status:"Complete"},{name:"Schematic design",status:"In progress",date:"65%"},{name:"DD phase",status:"Planned"},{name:"Construction start",status:"Planned",date:"Q3 2026"}],
+    lookAhead:[{name:"Schematic design — MEP",status:"In progress",pct:60},{name:"Client scope review",status:"In progress",pct:30},{name:"Zoning application",status:"Overdue",pct:0}],
+    schedule_rag:"Lagging", cost_rag:"On budget", safety_rag:"N/A", overall_rag:"At risk"
   },
   {
-    id:5, name:"Portland Green DC", code:"PDX-GRN", location:"Portland, OR", region:"West",
-    client:"GreenByte Energy", phase:"Procurement", deliveryModel:"Design-Build", capacity:40,
-    contractValue:210000000, budget:210000000, committed:95000000, actual:63000000, forecast:212000000,
-    progress:30, spi:0.88, cpi:0.93, status:"Delayed",
-    trir:0.92, ltir:0.46, incidents:2, nearMisses:10, safetyObs:78,
-    openIssues:18, closedIssues:15, ncrCount:5, ncrClosed:2, inspPassRate:88, punchOpen:8, punchClosed:12,
-    rackTotal:950, racksReady:0, commPct:0, mwDelivered:0,
-    powerStatus:"Utility Agreement Pending", coolingStatus:"Procurement", ospPct:25, ispPct:5,
-    contingencyTotal:10500000, contingencyUsed:4200000,
-    coApproved:800000, coPending:2100000, coCount:2, coPendingCount:3,
-    pmName:"Lisa Thompson", director:"James Rodriguez",
-    risks:[
-      {desc:"Utility interconnection agreement delays",prob:5,impact:5,status:"Active",owner:"Utilities Lead"},
-      {desc:"Environmental permit challenges (wetlands)",prob:4,impact:4,status:"Active",owner:"Environmental"},
-      {desc:"Vendor delivery delays - cooling equipment",prob:4,impact:4,status:"Active",owner:"Procurement"},
-      {desc:"Budget pressure from material escalation",prob:3,impact:4,status:"Monitoring",owner:"Cost Control"},
-      {desc:"Design revision cycle extending schedule",prob:3,impact:3,status:"Mitigating",owner:"Design Lead"}
-    ],
-    milestones:[
-      {name:"Design Freeze",planned:"2025-05-31",actual:"2025-06-15",status:"completed"},
-      {name:"Major Equipment POs",planned:"2025-08-31",actual:null,status:"in-progress",pct:70},
-      {name:"Site Work Start",planned:"2025-11-01",actual:null,status:"in-progress",pct:40},
-      {name:"Foundation Complete",planned:"2026-04-30",actual:null,status:"planned"},
-      {name:"Steel Erection",planned:"2026-08-31",actual:null,status:"planned"},
-      {name:"Substantial Completion",planned:"2027-06-30",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"Custom Cooling Towers (4x)",vendor:"BAC",due:"2026-06-15",status:"Manufacturing"},
-      {item:"Medium Voltage Switchgear",vendor:"ABB",due:"2026-05-01",status:"Manufacturing"},
-      {item:"Emergency Generators 3x2.5MW",vendor:"Cummins",due:"2026-07-01",status:"On Order"}
-    ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:16800000,committed:12000000,actual:8000000,forecast:17000000},
-      {code:"02",desc:"Site Work",budget:23100000,committed:18000000,actual:12000000,forecast:23500000},
-      {code:"03",desc:"Structural",budget:31500000,committed:15000000,actual:8000000,forecast:32000000},
-      {code:"04",desc:"Envelope",budget:21000000,committed:8000000,actual:4000000,forecast:21200000},
-      {code:"05",desc:"Mechanical",budget:33600000,committed:15000000,actual:10000000,forecast:34000000},
-      {code:"06",desc:"Electrical",budget:42000000,committed:12000000,actual:8000000,forecast:42500000},
-      {code:"07",desc:"Fire Protection",budget:10500000,committed:5000000,actual:3000000,forecast:10500000},
-      {code:"08",desc:"IT Infrastructure",budget:16800000,committed:5000000,actual:4000000,forecast:17000000},
-      {code:"09",desc:"Commissioning",budget:8400000,committed:2000000,actual:2000000,forecast:8500000},
-      {code:"10",desc:"Contingency",budget:6300000,committed:3000000,actual:4000000,forecast:5800000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:20000000,ev:17500000,ac:18500000},
-      {month:"Dec 25",pv:30000000,ev:26000000,ac:28000000},
-      {month:"Jan 26",pv:40000000,ev:35000000,ac:37000000},
-      {month:"Feb 26",pv:50000000,ev:44000000,ac:47000000},
-      {month:"Mar 26",pv:62000000,ev:55000000,ac:58000000},
-      {month:"Apr 26",pv:72000000,ev:63000000,ac:63000000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:3000000,actual:2500000},{month:"Aug 25",planned:8000000,actual:7000000},
-      {month:"Sep 25",planned:14000000,actual:12000000},{month:"Oct 25",planned:22000000,actual:19000000},
-      {month:"Nov 25",planned:32000000,actual:28000000},{month:"Dec 25",planned:42000000,actual:38000000},
-      {month:"Jan 26",planned:52000000,actual:48000000},{month:"Feb 26",planned:60000000,actual:55000000},
-      {month:"Mar 26",planned:68000000,actual:60000000},{month:"Apr 26",planned:76000000,actual:63000000},
-      {month:"May 26",planned:90000000,actual:null},{month:"Jun 26",planned:108000000,actual:null}
-    ],
-    docs:{rfis:18,rfisOpen:8,submittals:22,submittalsOpen:10,drawings:95,drawingsRev:15}
+    id:5, code:"RYD02", name:"Riyadh 2", location:"Riyadh, Saudi Arabia", campus:"Riyadh Campus",
+    type:"Core & Shell", phase:"Construction", contractValue:480000000, budget:480000000,
+    spiHistory:[0.90,0.91,0.91,0.91], cpiVal:0.88, spiVal:0.91,
+    percentComplete:52, designComplete:100, constructionComplete:52,
+    eac:540000000, bac:480000000, trir:1.08,
+    activeWorkers:180, targetWorkers:200,
+    openRFIs:5, highPriorityRFIs:2, lleAtRisk:1, lleDetail:"Steel +6wks",
+    changeOrders:3, coImpact:6000000, coSchedule:"+10d",
+    inspectionPassRate:89, contingencyTotal:14000000, contingencyUsed:10000000,
+    status:"At risk",
+    risks:[{id:"R-01",desc:"Steel delivery behind schedule",cat:"Procurement",severity:"High",costImpact:"+$4M",schedImpact:"+6wk",owner:"Procurement Lead",mitigation:"Alternate supplier identified"},{id:"R-02",desc:"Concrete quality NCR — batch 47",cat:"Quality",severity:"Medium",costImpact:"+$0.8M",schedImpact:"+5d",owner:"QA Manager",mitigation:"Re-testing and replacement pour planned"}],
+    tradeProgress:{MEP:35,Steel:58,Electrical:28,Civil:75},
+    cashFlow:[{q:"Q1",planned:110000000,actual:105000000},{q:"Q2",planned:130000000,actual:125000000},{q:"Q3",planned:140000000,actual:null,forecast:148000000},{q:"Q4 Fcst",planned:110000000,actual:null,forecast:120000000}],
+    milestones:[{name:"Foundation complete",status:"Complete"},{name:"Steel — Hall A",status:"In progress",date:"58%"},{name:"Steel — Hall B",status:"Planned"},{name:"MEP rough-in",status:"Planned"},{name:"Commissioning",status:"Planned",date:"Q4 2027"}],
+    lookAhead:[{name:"Steel erection — Hall A",status:"In progress",pct:58},{name:"Concrete — Level 2",status:"In progress",pct:45},{name:"MEP coordination",status:"Planned",pct:0}],
+    schedule_rag:"Lagging", cost_rag:"Overspend", safety_rag:"Lagging", overall_rag:"At risk"
   },
   {
-    id:6, name:"Atlanta Southeast", code:"ATL-SE", location:"Atlanta, GA", region:"Southeast",
-    client:"Peachtree Digital", phase:"Construction", deliveryModel:"PMCM", capacity:60,
-    contractValue:340000000, budget:340000000, committed:235000000, actual:187000000, forecast:345000000,
-    progress:55, spi:0.91, cpi:0.96, status:"At Risk",
-    trir:0.95, ltir:0.48, incidents:4, nearMisses:18, safetyObs:165,
-    openIssues:20, closedIssues:38, ncrCount:10, ncrClosed:6, inspPassRate:89, punchOpen:28, punchClosed:35,
-    rackTotal:1500, racksReady:375, commPct:15, mwDelivered:12,
-    powerStatus:"Switchgear Procurement", coolingStatus:"Chiller Install 40%", ospPct:60, ispPct:30,
-    contingencyTotal:17000000, contingencyUsed:10200000,
-    coApproved:3500000, coPending:2200000, coCount:6, coPendingCount:4,
-    pmName:"Robert Kim", director:"Patricia Gomez",
-    risks:[
-      {desc:"Subcontractor performance issues - MEP",prob:4,impact:5,status:"Active",owner:"Construction Mgr"},
-      {desc:"Safety culture concerns after recent incidents",prob:4,impact:4,status:"Active",owner:"HSE Manager"},
-      {desc:"Contingency burn rate exceeding plan",prob:4,impact:4,status:"Active",owner:"Cost Control"},
-      {desc:"Cooling equipment delivery delay 6 weeks",prob:3,impact:5,status:"Mitigating",owner:"Procurement"},
-      {desc:"Coordination issues between trades",prob:3,impact:3,status:"Active",owner:"Site Super"}
-    ],
-    milestones:[
-      {name:"Site Prep Complete",planned:"2025-04-15",actual:"2025-04-20",status:"completed"},
-      {name:"Foundation Complete",planned:"2025-07-31",actual:"2025-08-15",status:"completed"},
-      {name:"Steel Erection",planned:"2025-11-15",actual:"2025-12-01",status:"completed"},
-      {name:"Envelope Close-In",planned:"2026-03-15",actual:null,status:"in-progress",pct:65},
-      {name:"MEP Systems Install",planned:"2026-07-31",actual:null,status:"in-progress",pct:30},
-      {name:"Power Energization",planned:"2026-10-15",actual:null,status:"planned"},
-      {name:"Commissioning Complete",planned:"2027-02-28",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"Chillers 6x500ton",vendor:"Trane",due:"2026-05-15",status:"Delayed"},
-      {item:"PDU Units (20x)",vendor:"Eaton",due:"2026-04-01",status:"Manufacturing"},
-      {item:"Fire Suppression System",vendor:"Kidde",due:"2026-03-15",status:"Delivered"},
-      {item:"BMS Control System",vendor:"Johnson Controls",due:"2026-06-01",status:"Manufacturing"}
-    ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:27200000,committed:25000000,actual:22000000,forecast:27500000},
-      {code:"02",desc:"Site Work",budget:37400000,committed:35000000,actual:30000000,forecast:38000000},
-      {code:"03",desc:"Structural",budget:51000000,committed:48000000,actual:42000000,forecast:51500000},
-      {code:"04",desc:"Envelope",budget:34000000,committed:28000000,actual:20000000,forecast:34500000},
-      {code:"05",desc:"Mechanical",budget:54400000,committed:40000000,actual:28000000,forecast:55000000},
-      {code:"06",desc:"Electrical",budget:68000000,committed:30000000,actual:22000000,forecast:69000000},
-      {code:"07",desc:"Fire Protection",budget:17000000,committed:12000000,actual:8000000,forecast:17000000},
-      {code:"08",desc:"IT Infrastructure",budget:27200000,committed:10000000,actual:8000000,forecast:27500000},
-      {code:"09",desc:"Commissioning",budget:13600000,committed:4000000,actual:3000000,forecast:14000000},
-      {code:"10",desc:"Contingency",budget:10200000,committed:3000000,actual:4000000,forecast:11000000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:55000000,ev:50000000,ac:52000000},
-      {month:"Dec 25",pv:78000000,ev:71000000,ac:74000000},
-      {month:"Jan 26",pv:105000000,ev:96000000,ac:100000000},
-      {month:"Feb 26",pv:135000000,ev:123000000,ac:128000000},
-      {month:"Mar 26",pv:168000000,ev:153000000,ac:160000000},
-      {month:"Apr 26",pv:205000000,ev:187000000,ac:187000000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:12000000,actual:11000000},{month:"Aug 25",planned:25000000,actual:23000000},
-      {month:"Sep 25",planned:40000000,actual:37000000},{month:"Oct 25",planned:58000000,actual:54000000},
-      {month:"Nov 25",planned:78000000,actual:73000000},{month:"Dec 25",planned:100000000,actual:95000000},
-      {month:"Jan 26",planned:120000000,actual:115000000},{month:"Feb 26",planned:140000000,actual:135000000},
-      {month:"Mar 26",planned:160000000,actual:155000000},{month:"Apr 26",planned:180000000,actual:175000000},
-      {month:"May 26",planned:210000000,actual:null},{month:"Jun 26",planned:245000000,actual:null}
-    ],
-    docs:{rfis:35,rfisOpen:10,submittals:45,submittalsOpen:12,drawings:180,drawingsRev:20}
+    id:6, code:"MEC01", name:"Mecca 1", location:"Mecca, Saudi Arabia", campus:"Mecca Campus",
+    type:"Core & Shell", phase:"Construction", contractValue:660000000, budget:660000000,
+    spiHistory:[0.80,0.81,0.81,0.81], cpiVal:0.79, spiVal:0.81,
+    percentComplete:71, designComplete:100, constructionComplete:71,
+    eac:830000000, bac:660000000, trir:0.72,
+    activeWorkers:260, targetWorkers:300,
+    openRFIs:9, highPriorityRFIs:4, lleAtRisk:2, lleDetail:"UPS +10wks, HVAC +6wks",
+    changeOrders:8, coImpact:25000000, coSchedule:"+22d",
+    inspectionPassRate:91, contingencyTotal:20000000, contingencyUsed:18000000,
+    status:"Critical",
+    risks:[{id:"R-01",desc:"UPS delivery — factory fire at supplier",cat:"Procurement",severity:"Critical",costImpact:"+$12M",schedImpact:"+10wk",owner:"Procurement Lead",mitigation:"Emergency procurement from alternate vendor"},{id:"R-02",desc:"HVAC chiller units delayed",cat:"Procurement",severity:"High",costImpact:"+$5M",schedImpact:"+6wk",owner:"Procurement Lead",mitigation:"Expediting fee approved"},{id:"R-03",desc:"Budget overrun — contingency nearly depleted",cat:"Cost",severity:"Critical",costImpact:"+$25M",schedImpact:"N/A",owner:"Cost Controller",mitigation:"Executive review requested"}],
+    tradeProgress:{MEP:55,Steel:85,Electrical:48,Civil:92},
+    cashFlow:[{q:"Q1",planned:160000000,actual:170000000},{q:"Q2",planned:180000000,actual:195000000},{q:"Q3",planned:190000000,actual:null,forecast:210000000},{q:"Q4 Fcst",planned:140000000,actual:null,forecast:165000000}],
+    milestones:[{name:"Foundation",status:"Complete"},{name:"Steel erection",status:"Complete"},{name:"MEP rough-in",status:"In progress",date:"55%"},{name:"UPS installation",status:"BLOCKED"},{name:"HVAC installation",status:"At risk"},{name:"Commissioning",status:"Planned",date:"Q1 2028"}],
+    lookAhead:[{name:"MEP rough-in — all halls",status:"In progress",pct:55},{name:"Electrical — main switchboard",status:"In progress",pct:40},{name:"UPS procurement",status:"BLOCKED",pct:0},{name:"HVAC chiller delivery",status:"At risk",pct:0}],
+    schedule_rag:"Critical", cost_rag:"Critical", safety_rag:"On track", overall_rag:"Critical"
   },
   {
-    id:7, name:"Denver Mountain View", code:"DEN-MV", location:"Denver, CO", region:"Mountain",
-    client:"Alpine Data Corp", phase:"Construction", deliveryModel:"EPC", capacity:30,
-    contractValue:175000000, budget:175000000, committed:145000000, actual:126000000, forecast:176000000,
-    progress:72, spi:0.96, cpi:0.97, status:"On Track",
-    trir:0.68, ltir:0.22, incidents:1, nearMisses:9, safetyObs:155,
-    openIssues:6, closedIssues:42, ncrCount:7, ncrClosed:6, inspPassRate:95, punchOpen:10, punchClosed:48,
-    rackTotal:700, racksReady:420, commPct:40, mwDelivered:15,
-    powerStatus:"Energized - Partial", coolingStatus:"Operational - Phase 1", ospPct:82, ispPct:55,
-    contingencyTotal:8750000, contingencyUsed:4375000,
-    coApproved:1500000, coPending:600000, coCount:3, coPendingCount:1,
-    pmName:"Jennifer Adams", director:"James Rodriguez",
-    risks:[
-      {desc:"Winter weather impact on remaining exterior work",prob:3,impact:3,status:"Monitoring",owner:"Site Super"},
-      {desc:"Altitude considerations for cooling efficiency",prob:2,impact:3,status:"Mitigating",owner:"MEP Lead"},
-      {desc:"Supply chain delays on IT cabling",prob:3,impact:3,status:"Active",owner:"Procurement"},
-      {desc:"Commissioning resource availability",prob:2,impact:4,status:"Monitoring",owner:"Cx Manager"},
-      {desc:"Permit final inspection scheduling",prob:2,impact:3,status:"Monitoring",owner:"PM"}
-    ],
-    milestones:[
-      {name:"Site Prep Complete",planned:"2025-02-28",actual:"2025-02-25",status:"completed"},
-      {name:"Foundation Complete",planned:"2025-05-31",actual:"2025-06-02",status:"completed"},
-      {name:"Steel Erection",planned:"2025-08-31",actual:"2025-09-05",status:"completed"},
-      {name:"Building Envelope",planned:"2025-12-15",actual:"2025-12-20",status:"completed"},
-      {name:"MEP Systems",planned:"2026-05-31",actual:null,status:"in-progress",pct:62},
-      {name:"Power Energization",planned:"2026-07-31",actual:null,status:"planned"},
-      {name:"Commissioning",planned:"2026-09-30",actual:null,status:"planned"},
-      {name:"Tenant Handover",planned:"2026-11-30",actual:null,status:"planned"}
-    ],
-    longLead:[
-      {item:"Static Transfer Switch",vendor:"Eaton",due:"2026-03-01",status:"Delivered"},
-      {item:"Precision Cooling Units",vendor:"Stulz",due:"2026-04-15",status:"In Transit"},
-      {item:"Fire Suppression Tanks",vendor:"Victaulic",due:"2026-03-30",status:"Delivered"}
-    ],
-    cbs:[
-      {code:"01",desc:"General Conditions",budget:14000000,committed:13500000,actual:12500000,forecast:14000000},
-      {code:"02",desc:"Site Work",budget:19250000,committed:18500000,actual:17500000,forecast:19200000},
-      {code:"03",desc:"Structural",budget:26250000,committed:25500000,actual:24000000,forecast:26200000},
-      {code:"04",desc:"Envelope",budget:17500000,committed:17000000,actual:16000000,forecast:17500000},
-      {code:"05",desc:"Mechanical",budget:28000000,committed:25000000,actual:20000000,forecast:28200000},
-      {code:"06",desc:"Electrical",budget:35000000,committed:22000000,actual:18000000,forecast:35200000},
-      {code:"07",desc:"Fire Protection",budget:8750000,committed:8500000,actual:7000000,forecast:8700000},
-      {code:"08",desc:"IT Infrastructure",budget:14000000,committed:8500000,actual:5500000,forecast:14200000},
-      {code:"09",desc:"Commissioning",budget:7000000,committed:4000000,actual:3000000,forecast:7100000},
-      {code:"10",desc:"Contingency",budget:5250000,committed:2500000,actual:2500000,forecast:5700000}
-    ],
-    evm:[
-      {month:"Nov 25",pv:50000000,ev:48000000,ac:49000000},
-      {month:"Dec 25",pv:65000000,ev:62000000,ac:64000000},
-      {month:"Jan 26",pv:80000000,ev:77000000,ac:79000000},
-      {month:"Feb 26",pv:95000000,ev:92000000,ac:94000000},
-      {month:"Mar 26",pv:112000000,ev:108000000,ac:110000000},
-      {month:"Apr 26",pv:131000000,ev:126000000,ac:126000000}
-    ],
-    cashflow:[
-      {month:"Jul 25",planned:20000000,actual:19000000},{month:"Aug 25",planned:30000000,actual:28500000},
-      {month:"Sep 25",planned:42000000,actual:40000000},{month:"Oct 25",planned:55000000,actual:53000000},
-      {month:"Nov 25",planned:68000000,actual:66000000},{month:"Dec 25",planned:82000000,actual:80000000},
-      {month:"Jan 26",planned:95000000,actual:93000000},{month:"Feb 26",planned:105000000,actual:103000000},
-      {month:"Mar 26",planned:115000000,actual:113000000},{month:"Apr 26",planned:125000000,actual:123000000},
-      {month:"May 26",planned:140000000,actual:null},{month:"Jun 26",planned:158000000,actual:null}
-    ],
-    docs:{rfis:25,rfisOpen:3,submittals:52,submittalsOpen:5,drawings:165,drawingsRev:8}
+    id:7, code:"MEC02", name:"Mecca 2", location:"Mecca, Saudi Arabia", campus:"Mecca Campus",
+    type:"Core & Shell", phase:"Construction", contractValue:480000000, budget:480000000,
+    spiHistory:[0.93,0.94,0.94,0.94], cpiVal:0.94, spiVal:0.94,
+    percentComplete:65, designComplete:100, constructionComplete:65,
+    eac:510000000, bac:480000000, trir:0.70,
+    activeWorkers:200, targetWorkers:220,
+    openRFIs:4, highPriorityRFIs:1, lleAtRisk:0, lleDetail:"—",
+    changeOrders:2, coImpact:3000000, coSchedule:"+6d",
+    inspectionPassRate:95, contingencyTotal:14000000, contingencyUsed:8000000,
+    status:"On track",
+    risks:[{id:"R-01",desc:"Minor concrete curing issue — Hall C",cat:"Quality",severity:"Low",costImpact:"$0",schedImpact:"+2d",owner:"QA Manager",mitigation:"Additional curing time allocated"}],
+    tradeProgress:{MEP:50,Steel:80,Electrical:45,Civil:88},
+    cashFlow:[{q:"Q1",planned:100000000,actual:98000000},{q:"Q2",planned:120000000,actual:118000000},{q:"Q3",planned:140000000,actual:null,forecast:138000000},{q:"Q4 Fcst",planned:120000000,actual:null,forecast:118000000}],
+    milestones:[{name:"Foundation",status:"Complete"},{name:"Steel erection",status:"In progress",date:"80%"},{name:"MEP rough-in",status:"In progress",date:"50%"},{name:"Commissioning",status:"Planned",date:"Q2 2027"}],
+    lookAhead:[{name:"Steel erection — remaining",status:"In progress",pct:80},{name:"MEP rough-in — Hall A",status:"In progress",pct:55},{name:"Electrical main feeds",status:"In progress",pct:40}],
+    schedule_rag:"Lagging", cost_rag:"Overspend", safety_rag:"On track", overall_rag:"At risk"
+  },
+  {
+    id:8, code:"SAL01", name:"Salalah 1", location:"Salalah, Oman", campus:"Salalah Campus",
+    type:"Core & Shell", phase:"Design", contractValue:420000000, budget:420000000,
+    spiHistory:[1.00,1.02,1.02,1.02], cpiVal:1.01, spiVal:1.02,
+    percentComplete:31, designComplete:31, constructionComplete:0,
+    eac:416000000, bac:420000000, trir:null,
+    activeWorkers:0, targetWorkers:0,
+    openRFIs:1, highPriorityRFIs:0, lleAtRisk:0, lleDetail:"—",
+    changeOrders:0, coImpact:0, coSchedule:"0d",
+    inspectionPassRate:null, contingencyTotal:12000000, contingencyUsed:1000000,
+    status:"On track",
+    risks:[{id:"R-01",desc:"Geotechnical — high water table zone B",cat:"Design",severity:"Low",costImpact:"+$0.3M",schedImpact:"+4d",owner:"Structural Eng",mitigation:"Foundation redesign for deep piles"}],
+    tradeProgress:{MEP:0,Steel:0,Electrical:0,Civil:0},
+    cashFlow:[{q:"Q1",planned:30000000,actual:29000000},{q:"Q2",planned:45000000,actual:null,forecast:43000000},{q:"Q3",planned:60000000,actual:null,forecast:58000000},{q:"Q4 Fcst",planned:75000000,actual:null,forecast:72000000}],
+    milestones:[{name:"Concept design",status:"Complete"},{name:"Schematic design",status:"In progress",date:"55%"},{name:"DD phase",status:"Planned"},{name:"Construction start",status:"Planned",date:"Q1 2027"}],
+    lookAhead:[{name:"Schematic design — structural",status:"In progress",pct:60},{name:"Schematic design — MEP",status:"In progress",pct:45},{name:"Site survey — geotechnical",status:"Complete",pct:100}],
+    schedule_rag:"On track", cost_rag:"On budget", safety_rag:"N/A", overall_rag:"On track"
   }
 ];
 
-// âââ UTILITY FUNCTIONS ââââââââââââââââââââââââââââââââââââââââââ
-const fmt = (n) => {
-  if(n>=1e9) return '$'+(n/1e9).toFixed(2)+'B';
-  if(n>=1e6) return '$'+(n/1e6).toFixed(0)+'M';
-  if(n>=1e3) return '$'+(n/1e3).toFixed(0)+'K';
-  return '$'+n;
-};
-const fmtFull = (n) => '$'+n.toLocaleString();
-const pct = (n) => (n*100).toFixed(1)+'%';
-const statusColor = (s) => s==='On Track'?'#10b981':s==='At Risk'?'#f59e0b':'#ef4444';
-const statusBg = (s,dark) => s==='On Track'?(dark?'bg-emerald-900/40 text-emerald-400 border-emerald-700':'bg-emerald-50 text-emerald-700 border-emerald-200'):s==='At Risk'?(dark?'bg-amber-900/40 text-amber-400 border-amber-700':'bg-amber-50 text-amber-700 border-amber-200'):(dark?'bg-red-900/40 text-red-400 border-red-700':'bg-red-50 text-red-700 border-red-200');
-const indexColor = (v) => v>=0.95?'#10b981':v>=0.85?'#f59e0b':'#ef4444';
-const indexBg = (v,dark) => v>=0.95?(dark?'text-emerald-400':'text-emerald-600'):v>=0.85?(dark?'text-amber-400':'text-amber-600'):(dark?'text-red-400':'text-red-600');
-const phaseIcon = (p) => p==='Design'?'\u270F\uFE0F':p==='Procurement'?'\uD83D\uDCE6':p==='Construction'?'\uD83D\uDEA7':'\u2699\uFE0F';
+// ═══════════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════════
+const fmt = (n,dec=0) => {if(n==null) return "—"; if(n>=1e9) return "$"+(n/1e9).toFixed(1)+"B"; if(n>=1e6) return "$"+(n/1e6).toFixed(0)+"M"; if(n>=1e3) return "$"+(n/1e3).toFixed(0)+"K"; return "$"+n.toFixed(dec)};
+const fmtB = (n) => {if(n==null) return "—"; if(n>=1e9) return (n/1e9).toFixed(2)+"B"; if(n>=1e6) return (n/1e6).toFixed(0)+"M"; return n.toLocaleString()};
+const pct = (n) => n==null?"—":n+"%";
+const ragColor = (s) => s==="On track"||s==="On budget"||s==="Green"||s==="Complete"||s==="N/A"?"#22c55e":s==="At risk"||s==="Lagging"||s==="Amber"||s==="Overspend"||s==="Monitor"?"#f59e0b":"#ef4444";
+const ragClass = (s) => s==="On track"||s==="On budget"||s==="Green"||s==="N/A"?"badge-green":s==="At risk"||s==="Lagging"||s==="Amber"?"badge-amber":"badge-red";
+const statusBadge = (s) => {const c=ragClass(s); return <span className={`badge ${c}`}>{s}</span>};
+const sevColor = (s) => s==="Critical"?"#ef4444":s==="High"?"#f59e0b":s==="Medium"||s==="Med"?"#3b82f6":"#22c55e";
 
-// âââ GAUGE COMPONENT ââââââââââââââââââââââââââââââââââââââââââââ
-const Gauge = ({value, label, size=120, color}) => {
-  const r = size/2-10;
-  const c = Math.PI*r;
-  const v = Math.min(Math.max(value,0),2);
-  const offset = c - (v/2)*c;
-  const col = color || indexColor(value);
-  return (
-    <div className="flex flex-col items-center">
-      <svg width={size} height={size/2+15} viewBox={`0 0 ${size} ${size/2+15}`}>
-        <path d={`M 10,${size/2+5} A ${r},${r} 0 0,1 ${size-10},${size/2+5}`} fill="none" stroke="#374151" strokeWidth="8" strokeLinecap="round"/>
-        <path d={`M 10,${size/2+5} A ${r},${r} 0 0,1 ${size-10},${size/2+5}`} fill="none" stroke={col} strokeWidth="8" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={offset} style={{transition:'stroke-dashoffset 1s ease'}}/>
-        <text x={size/2} y={size/2} textAnchor="middle" fill={col} fontSize={size/4.5} fontWeight="700">{value.toFixed(2)}</text>
-      </svg>
-      <span className="text-xs font-medium mt-1 opacity-70">{label}</span>
-    </div>
-  );
-};
+// Portfolio aggregations
+const totalBudget = PROJECTS.reduce((a,p)=>a+p.budget,0);
+const activeCount = PROJECTS.length;
+const locations = [...new Set(PROJECTS.map(p=>p.location.split(",")[1]?.trim()||p.location))].length;
+const avgSPI = (PROJECTS.reduce((a,p)=>a+p.spiVal,0)/PROJECTS.length).toFixed(2);
+const totalRisks = PROJECTS.reduce((a,p)=>a+(p.risks?.length||0),0);
+const highSevRisks = PROJECTS.reduce((a,p)=>a+(p.risks?.filter(r=>r.severity==="Critical"||r.severity==="High").length||0),0);
+const inConstruction = PROJECTS.filter(p=>p.phase==="Construction").length;
+const inDesign = PROJECTS.filter(p=>p.phase==="Design").length;
+const onTrackCount = PROJECTS.filter(p=>p.status==="On track").length;
+const atRiskCount = PROJECTS.filter(p=>p.status==="At risk").length;
+const criticalCount = PROJECTS.filter(p=>p.status==="Critical").length;
+const avgComplete = Math.round(PROJECTS.reduce((a,p)=>a+p.percentComplete,0)/PROJECTS.length);
+const safetyTRIR = (PROJECTS.filter(p=>p.trir!=null).reduce((a,p)=>a+(p.trir||0),0)/PROJECTS.filter(p=>p.trir!=null).length).toFixed(2);
+const portfolioHealth = Math.round((onTrackCount/PROJECTS.length)*100);
+const topRisks = PROJECTS.flatMap(p=>(p.risks||[]).map(r=>({...r,project:p.code}))).filter(r=>r.severity==="Critical"||r.severity==="High").slice(0,5);
 
-// âââ MINI PROGRESS BAR ââââââââââââââââââââââââââââââââââââââââââ
-const ProgressBar = ({value, color='#3b82f6', height=8, showLabel=true}) => (
-  <div className="w-full">
-    <div className="w-full rounded-full overflow-hidden" style={{height,background:'#1e293b'}}>
-      <div className="h-full rounded-full transition-all duration-700" style={{width:`${Math.min(value,100)}%`,background:color}}/>
-    </div>
-    {showLabel && <span className="text-xs opacity-60 mt-1">{value}%</span>}
+// ═══════════════════════════════════════════════════════════════
+//  COMPONENTS — SHARED
+// ═══════════════════════════════════════════════════════════════
+const IntBadge = ({label}) => <span className="integration-badge">{label}</span>;
+
+const ProgressBar = ({value,color="#3b82f6",height=6,bg="#1e293b"}) => (
+  <div style={{height,borderRadius:height/2,background:bg,overflow:"hidden",width:"100%"}}>
+    <div style={{height:"100%",width:`${Math.min(value||0,100)}%`,background:color,borderRadius:height/2,transition:"width .5s ease"}}/>
   </div>
 );
 
-// âââ RISK SCORE BADGE âââââââââââââââââââââââââââââââââââââââââââ
-const RiskBadge = ({score}) => {
-  const bg = score>=16?'bg-red-600':score>=9?'bg-amber-500':score>=4?'bg-yellow-500':'bg-green-500';
-  return <span className={`${bg} text-white text-xs font-bold px-2 py-0.5 rounded`}>{score}</span>;
+const KPICard = ({label,value,sub,color="#e2e8f0",badges,valueSize=28}) => (
+  <div className="kpi-card">
+    <div style={{fontSize:10,color:"#64748b",fontWeight:600,textTransform:"uppercase",letterSpacing:".5px",marginBottom:4,display:"flex",alignItems:"center",gap:6}}>
+      {label}
+      {badges && <span style={{display:"flex",gap:3}}>{badges.map((b,i)=><IntBadge key={i} label={b}/>)}</span>}
+    </div>
+    <div style={{fontSize:valueSize,fontWeight:800,color,lineHeight:1.1}}>{value}</div>
+    {sub && <div style={{fontSize:11,color:"#64748b",marginTop:2}}>{sub}</div>}
+  </div>
+);
+
+const SectionTitle = ({icon,title,badges,extra}) => (
+  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+    <div style={{display:"flex",alignItems:"center",gap:8}}>
+      <span style={{fontSize:14}}>{icon}</span>
+      <span style={{fontSize:14,fontWeight:700,color:"#e2e8f0"}}>{title}</span>
+      {badges && badges.map((b,i)=><IntBadge key={i} label={b}/>)}
+    </div>
+    {extra}
+  </div>
+);
+
+const DomainCard = ({label,value,sub,rag,badges}) => (
+  <div style={{background:"#0f172a",border:"1px solid #1e293b",borderRadius:8,padding:12,flex:1,minWidth:140}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+      <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>{label}</span>
+      {statusBadge(rag)}
+    </div>
+    <div style={{fontSize:22,fontWeight:800,color:ragColor(rag)}}>{value}</div>
+    {sub && <div style={{fontSize:10,color:"#64748b",marginTop:2}}>{sub}</div>}
+    {badges && <div style={{marginTop:6,display:"flex",gap:4}}>{badges.map((b,i)=><IntBadge key={i} label={b}/>)}</div>}
+  </div>
+);
+
+const HealthGauge = ({pct:p}) => {
+  const r=32, c=2*Math.PI*r, dash=c*(p/100);
+  return (
+    <div className="health-gauge" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width={80} height={80} viewBox="0 0 80 80">
+        <circle cx={40} cy={40} r={r} fill="none" stroke="#1e293b" strokeWidth={6}/>
+        <circle cx={40} cy={40} r={r} fill="none" stroke="#f59e0b" strokeWidth={6} strokeDasharray={`${dash} ${c-dash}`} strokeLinecap="round" transform="rotate(-90 40 40)" style={{transition:"stroke-dasharray .8s ease"}}/>
+        <text x={40} y={36} textAnchor="middle" fill="#f59e0b" fontSize={18} fontWeight={800}>{p}%</text>
+        <text x={40} y={50} textAnchor="middle" fill="#64748b" fontSize={8}>Portfolio</text>
+      </svg>
+    </div>
+  );
 };
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// LAYER 0: PROJECT HEALTH OVERVIEW (Landing Page)
-// Simple view â project names, health status, key indicators
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const Layer0_ProjectHealth = ({onSelectProject, onGoExecutive, dark}) => {
-  const d = dark;
-  const card = d?'bg-slate-800 border-slate-700':'bg-white border-gray-200';
-  const txt = d?'text-gray-300':'text-gray-600';
-  const txtH = d?'text-white':'text-gray-900';
-
-  const totalValue = PROJECTS.reduce((s,p)=>s+p.contractValue,0);
-  const avgSPI = PROJECTS.reduce((s,p)=>s+p.spi,0)/PROJECTS.length;
-  const avgCPI = PROJECTS.reduce((s,p)=>s+p.cpi,0)/PROJECTS.length;
-  const onTrack = PROJECTS.filter(p=>p.status==='On Track').length;
-  const atRisk = PROJECTS.filter(p=>p.status==='At Risk').length;
-  const delayed = PROJECTS.filter(p=>p.status==='Delayed').length;
-
+const RiskMatrix = () => {
+  const levels = ["Very Low","Low","Medium","High","Very High"];
+  const colors = [["#14532d","#14532d","#365314","#854d0e","#991b1b"],["#14532d","#365314","#854d0e","#854d0e","#991b1b"],["#365314","#854d0e","#854d0e","#991b1b","#991b1b"],["#854d0e","#854d0e","#991b1b","#991b1b","#7f1d1d"],["#854d0e","#991b1b","#991b1b","#7f1d1d","#7f1d1d"]];
+  const riskPositions = topRisks.map((r,i)=>({label:"R"+(i+1),row:r.severity==="Critical"?4:r.severity==="High"?3:2,col:r.severity==="Critical"?4:r.severity==="High"?3:2}));
   return (
-    <div className="fade-in p-4 md:p-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-          <h2 className={`text-2xl md:text-3xl font-bold ${txtH}`}>Project Portfolio</h2>
-          <p className={`${txt} mt-1`}>7 active projects &middot; {fmt(totalValue)} total value &middot; 320 MW capacity</p>
-        </div>
-        <button onClick={onGoExecutive} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-          Executive Summary &rarr;
-        </button>
-      </div>
-
-      {/* Quick Status Bar */}
-      <div className={`${card} border rounded-xl p-4 mb-6 flex flex-wrap gap-6 items-center`}>
-        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500 pulse-dot"></span><span className={`text-sm font-semibold ${txtH}`}>{onTrack} On Track</span></div>
-        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500 pulse-dot"></span><span className={`text-sm font-semibold ${txtH}`}>{atRisk} At Risk</span></div>
-        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 pulse-dot"></span><span className={`text-sm font-semibold ${txtH}`}>{delayed} Delayed</span></div>
-        <div className="ml-auto flex gap-4">
-          <span className={`text-sm ${txt}`}>Avg SPI: <span className={`font-bold ${indexBg(avgSPI,d)}`}>{avgSPI.toFixed(2)}</span></span>
-          <span className={`text-sm ${txt}`}>Avg CPI: <span className={`font-bold ${indexBg(avgCPI,d)}`}>{avgCPI.toFixed(2)}</span></span>
-        </div>
-      </div>
-
-      {/* Project Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {PROJECTS.map(p => (
-          <div key={p.id} onClick={()=>onSelectProject(p)} className={`${card} border rounded-xl p-5 cursor-pointer kpi-hover`}>
-            {/* Status + Phase */}
-            <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusBg(p.status,d)}`}>{p.status}</span>
-              <span className={`text-xs ${txt}`}>{phaseIcon(p.phase)} {p.phase}</span>
-            </div>
-            {/* Name + Location */}
-            <h3 className={`font-bold text-base ${txtH} mb-1`}>{p.name}</h3>
-            <p className={`text-xs ${txt} mb-3`}>{p.location} &middot; {p.client}</p>
-            {/* Progress Bar */}
-            <div className="mb-3">
-              <div className="flex justify-between text-xs mb-1">
-                <span className={txt}>Progress</span>
-                <span className={`font-bold ${txtH}`}>{p.progress}%</span>
-              </div>
-              <ProgressBar value={p.progress} color={statusColor(p.status)} showLabel={false}/>
-            </div>
-            {/* Key Metrics Row */}
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <div className={`text-xs ${txt}`}>Value</div>
-                <div className={`text-sm font-bold ${txtH}`}>{fmt(p.contractValue)}</div>
-              </div>
-              <div>
-                <div className={`text-xs ${txt}`}>SPI</div>
-                <div className={`text-sm font-bold ${indexBg(p.spi,d)}`}>{p.spi.toFixed(2)}</div>
-              </div>
-              <div>
-                <div className={`text-xs ${txt}`}>CPI</div>
-                <div className={`text-sm font-bold ${indexBg(p.cpi,d)}`}>{p.cpi.toFixed(2)}</div>
-              </div>
-            </div>
-            {/* Capacity */}
-            <div className={`mt-3 pt-3 border-t ${d?'border-slate-700':'border-gray-100'} flex justify-between text-xs`}>
-              <span className={txt}>{p.capacity} MW</span>
-              <span className={txt}>{p.rackTotal} racks</span>
-              <span className={`font-medium ${txtH}`}>{p.deliveryModel}</span>
-            </div>
+    <div>
+      <div style={{fontSize:9,color:"#64748b",textAlign:"center",marginBottom:4}}>Impact ↑ · Probability →</div>
+      <div style={{display:"flex",flexDirection:"column",gap:1}}>
+        {[4,3,2,1,0].map(row=>(
+          <div key={row} style={{display:"flex",gap:1}}>
+            {[0,1,2,3,4].map(col=>{
+              const here = riskPositions.filter(r=>r.row===row&&r.col===col);
+              return <div key={col} className="risk-cell" style={{background:colors[row][col]+"cc",flex:1}}>{here.map(h=><span key={h.label} style={{color:"#fff",fontSize:8}}>{h.label}</span>)}</div>;
+            })}
           </div>
         ))}
       </div>
@@ -610,778 +392,560 @@ const Layer0_ProjectHealth = ({onSelectProject, onGoExecutive, dark}) => {
   );
 };
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// LAYER 1: PROJECT MANAGEMENT DETAIL
-// Full detail view when drilling into a single project
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const Layer1_ProjectDetail = ({project:p, onBack, dark}) => {
-  const [tab,setTab] = useState('overview');
-  const d = dark;
-  const card = d?'bg-slate-800 border-slate-700':'bg-white border-gray-200';
-  const txt = d?'text-gray-300':'text-gray-600';
-  const txtH = d?'text-white':'text-gray-900';
-  const txtMuted = d?'text-gray-500':'text-gray-400';
-  const tblHead = d?'bg-slate-700/50':'bg-gray-50';
-  const tblBorder = d?'border-slate-700':'border-gray-200';
-  const tooltipStyle = {backgroundColor:d?'#1e293b':'#fff',border:`1px solid ${d?'#334155':'#e5e7eb'}`,color:d?'#fff':'#111',borderRadius:'8px',fontSize:'12px'};
-
-  const tabs = [
-    {id:'overview',label:'Overview'},
-    {id:'cost',label:'Cost Control'},
-    {id:'schedule',label:'Schedule'},
-    {id:'progress',label:'Progress & EVM'},
-    {id:'quality',label:'QA/QC'},
-    {id:'safety',label:'HSE / Safety'},
-    {id:'procurement',label:'Procurement'},
-    {id:'docs',label:'Documents'}
-  ];
-
-  const contingencyPct = ((p.contingencyUsed/p.contingencyTotal)*100).toFixed(1);
-  const budgetVar = p.budget - p.forecast;
-  const budgetVarPct = ((budgetVar/p.budget)*100).toFixed(1);
-
-  return (
-    <div className="fade-in p-4 md:p-8 max-w-7xl mx-auto">
-      {/* Breadcrumb + Back */}
-      <div className="flex items-center gap-2 mb-4 text-sm">
-        <button onClick={onBack} className="text-blue-500 hover:text-blue-400 font-medium">&larr; All Projects</button>
-        <span className={txtMuted}>/</span>
-        <span className={txtH}>{p.name}</span>
-      </div>
-
-      {/* Project Header */}
-      <div className={`${card} border rounded-xl p-5 mb-6`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className={`text-xl md:text-2xl font-bold ${txtH}`}>{p.name}</h2>
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusBg(p.status,d)}`}>{p.status}</span>
-            </div>
-            <p className={`text-sm ${txt}`}>{p.location} &middot; {p.client} &middot; {p.deliveryModel} &middot; {p.phase}</p>
-            <p className={`text-xs ${txtMuted} mt-1`}>PM: {p.pmName} &middot; Director: {p.director} &middot; {p.code}</p>
-          </div>
-          <div className="flex gap-6 text-center">
-            <div><div className={`text-xs ${txt}`}>Contract Value</div><div className={`text-lg font-bold ${txtH}`}>{fmt(p.contractValue)}</div></div>
-            <div><div className={`text-xs ${txt}`}>Capacity</div><div className={`text-lg font-bold ${txtH}`}>{p.capacity} MW</div></div>
-            <div><div className={`text-xs ${txt}`}>Progress</div><div className={`text-lg font-bold ${txtH}`}>{p.progress}%</div></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className={`flex gap-1 mb-6 overflow-x-auto pb-2 border-b ${tblBorder}`}>
-        {tabs.map(t => (
-          <button key={t.id} onClick={()=>setTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap rounded-t-lg transition-colors ${tab===t.id?(d?'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500':'bg-blue-50 text-blue-700 border-b-2 border-blue-600'):(d?'text-gray-400 hover:text-gray-200':'text-gray-500 hover:text-gray-700')}`}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ââ OVERVIEW TAB ââââââââââââââââââââââââââââââââ */}
-      {tab==='overview' && (
-        <div className="fade-in space-y-6">
-          {/* Gauges Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className={`${card} border rounded-xl p-4 flex flex-col items-center`}>
-              <Gauge value={p.spi} label="Schedule Performance" size={130}/>
-            </div>
-            <div className={`${card} border rounded-xl p-4 flex flex-col items-center`}>
-              <Gauge value={p.cpi} label="Cost Performance" size={130}/>
-            </div>
-            <div className={`${card} border rounded-xl p-4 text-center`}>
-              <div className={`text-3xl font-bold ${indexBg(1-p.trir,d)}`}>{p.trir}</div>
-              <div className={`text-xs ${txt} mt-2`}>TRIR</div>
-              <div className={`text-xs ${txtMuted}`}>{p.incidents} incidents &middot; {p.nearMisses} near misses</div>
-            </div>
-            <div className={`${card} border rounded-xl p-4 text-center`}>
-              <div className={`text-3xl font-bold ${txtH}`}>{p.openIssues}</div>
-              <div className={`text-xs ${txt} mt-2`}>Open Issues</div>
-              <div className={`text-xs ${txtMuted}`}>{p.closedIssues} closed &middot; {p.inspPassRate}% pass rate</div>
-            </div>
-          </div>
-
-          {/* Cost Summary + Milestones */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-4`}>Cost Summary</h3>
-              <div className="space-y-3">
-                {[
-                  {label:'Budget',val:p.budget,color:'#3b82f6'},
-                  {label:'Committed',val:p.committed,color:'#8b5cf6'},
-                  {label:'Actual',val:p.actual,color:'#f59e0b'},
-                  {label:'Forecast',val:p.forecast,color:'#ef4444'}
-                ].map(r => (
-                  <div key={r.label}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className={txt}>{r.label}</span>
-                      <span className={`font-medium ${txtH}`}>{fmt(r.val)}</span>
-                    </div>
-                    <div className="w-full h-3 rounded-full overflow-hidden" style={{background:d?'#1e293b':'#e5e7eb'}}>
-                      <div className="h-full rounded-full" style={{width:`${(r.val/p.budget)*100}%`,background:r.color,maxWidth:'100%'}}/>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className={`mt-4 pt-3 border-t ${tblBorder} flex justify-between text-xs`}>
-                <span className={txt}>Variance: <span className={budgetVar>=0?'text-emerald-400':'text-red-400'}>{fmt(Math.abs(budgetVar))} ({budgetVarPct}%)</span></span>
-                <span className={txt}>Contingency: {contingencyPct}% used</span>
-              </div>
-            </div>
-
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-4`}>Key Milestones</h3>
-              <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
-                {p.milestones.map((m,i) => (
-                  <div key={i} className={`p-3 rounded-lg border-l-4 ${m.status==='completed'?'border-emerald-500'+(d?' bg-emerald-900/10':' bg-emerald-50'):m.status==='in-progress'?'border-blue-500'+(d?' bg-blue-900/10':' bg-blue-50'):'border-gray-500'+(d?' bg-slate-700/30':' bg-gray-50')}`}>
-                    <div className="flex justify-between items-center">
-                      <span className={`text-sm font-medium ${txtH}`}>{m.name}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${m.status==='completed'?'bg-emerald-600 text-white':m.status==='in-progress'?'bg-blue-600 text-white':'bg-gray-600 text-white'}`}>
-                        {m.status==='completed'?'Done':m.status==='in-progress'?`${m.pct||0}%`:'Planned'}
-                      </span>
-                    </div>
-                    <div className={`text-xs ${txtMuted} mt-1`}>
-                      Target: {m.planned}{m.actual?` | Actual: ${m.actual}`:''}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* S-Curve */}
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Earned Value S-Curve</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={p.evm}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>fmt(v)}/>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v)=>fmtFull(v)}/>
-                <Legend/>
-                <Area type="monotone" dataKey="pv" name="Planned Value" stroke="#3b82f6" fill="#3b82f633" strokeWidth={2}/>
-                <Area type="monotone" dataKey="ev" name="Earned Value" stroke="#10b981" fill="#10b98133" strokeWidth={2}/>
-                <Area type="monotone" dataKey="ac" name="Actual Cost" stroke="#f59e0b" fill="#f59e0b33" strokeWidth={2}/>
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Risks + DC Metrics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-4`}>Top Risks</h3>
-              <div className="space-y-2">
-                {p.risks.map((r,i) => (
-                  <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${d?'bg-slate-700/30':'bg-gray-50'}`}>
-                    <RiskBadge score={r.prob*r.impact}/>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${txtH}`}>{r.desc}</p>
-                      <p className={`text-xs ${txtMuted} mt-0.5`}>{r.owner} &middot; {r.status}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-4`}>Data Center Metrics</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  {label:'MW Delivered',val:`${p.mwDelivered}/${p.capacity} MW`,pct:(p.mwDelivered/p.capacity)*100,color:'#3b82f6'},
-                  {label:'Rack Readiness',val:`${p.racksReady}/${p.rackTotal}`,pct:(p.racksReady/p.rackTotal)*100,color:'#8b5cf6'},
-                  {label:'Commissioning',val:`${p.commPct}%`,pct:p.commPct,color:'#10b981'},
-                  {label:'OSP Progress',val:`${p.ospPct}%`,pct:p.ospPct,color:'#f59e0b'},
-                  {label:'ISP Progress',val:`${p.ispPct}%`,pct:p.ispPct,color:'#ef4444'},
-                  {label:'Contingency Used',val:`${contingencyPct}%`,pct:parseFloat(contingencyPct),color:'#ec4899'}
-                ].map((m,i)=>(
-                  <div key={i}>
-                    <div className="flex justify-between text-xs mb-1"><span className={txt}>{m.label}</span><span className={`font-medium ${txtH}`}>{m.val}</span></div>
-                    <ProgressBar value={m.pct} color={m.color} height={6} showLabel={false}/>
-                  </div>
-                ))}
-              </div>
-              <div className={`mt-4 pt-3 border-t ${tblBorder} text-xs ${txt}`}>
-                <div className="flex justify-between mb-1"><span>Power System:</span><span className={txtH}>{p.powerStatus}</span></div>
-                <div className="flex justify-between"><span>Cooling System:</span><span className={txtH}>{p.coolingStatus}</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ââ COST CONTROL TAB ââââââââââââââââââââââââââââ */}
-      {tab==='cost' && (
-        <div className="fade-in space-y-6">
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Cost Breakdown Structure (CBS)</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className={`${tblHead} text-xs`}>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Code</th>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Description</th>
-                  <th className={`text-right p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Budget</th>
-                  <th className={`text-right p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Committed</th>
-                  <th className={`text-right p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Actual</th>
-                  <th className={`text-right p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Forecast</th>
-                  <th className={`text-right p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Variance</th>
-                </tr></thead>
-                <tbody>
-                  {p.cbs.map((c,i)=>{
-                    const v=c.budget-c.forecast;
-                    return (
-                      <tr key={i} className={`border-b ${tblBorder} ${i%2===0?(d?'bg-slate-800':'bg-white'):(d?'bg-slate-700/20':'bg-gray-50/50')}`}>
-                        <td className={`p-3 font-mono text-xs ${txt}`}>{c.code}</td>
-                        <td className={`p-3 ${txtH}`}>{c.desc}</td>
-                        <td className={`p-3 text-right ${txt}`}>{fmt(c.budget)}</td>
-                        <td className={`p-3 text-right ${txt}`}>{fmt(c.committed)}</td>
-                        <td className={`p-3 text-right ${txt}`}>{fmt(c.actual)}</td>
-                        <td className={`p-3 text-right ${txtH} font-medium`}>{fmt(c.forecast)}</td>
-                        <td className={`p-3 text-right font-medium ${v>=0?'text-emerald-400':'text-red-400'}`}>{v>=0?'+':''}{fmt(v)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Variance Analysis by Trade</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={p.cbs.map(c=>({name:c.desc.split('/')[0].split('(')[0].trim().substring(0,12),budget:c.budget,forecast:c.forecast,variance:c.budget-c.forecast}))}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="name" stroke={d?'#9ca3af':'#6b7280'} fontSize={10} angle={-20} textAnchor="end" height={60}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>fmt(v)}/>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v)=>fmtFull(v)}/>
-                <Legend/>
-                <Bar dataKey="budget" name="Budget" fill="#3b82f6" radius={[4,4,0,0]}/>
-                <Bar dataKey="forecast" name="Forecast" fill="#f59e0b" radius={[4,4,0,0]}/>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Cash Flow Projection</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={p.cashflow}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>fmt(v)}/>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v)=>v?fmtFull(v):'N/A'}/>
-                <Legend/>
-                <Area type="monotone" dataKey="planned" name="Planned" stroke="#3b82f6" fill="#3b82f622" strokeWidth={2}/>
-                <Area type="monotone" dataKey="actual" name="Actual" stroke="#10b981" fill="#10b98122" strokeWidth={2}/>
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-3`}>Change Orders</h3>
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div><div className={`text-2xl font-bold text-emerald-400`}>{fmt(p.coApproved)}</div><div className={`text-xs ${txt}`}>{p.coCount} Approved</div></div>
-                <div><div className={`text-2xl font-bold text-amber-400`}>{fmt(p.coPending)}</div><div className={`text-xs ${txt}`}>{p.coPendingCount} Pending</div></div>
-              </div>
-            </div>
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-3`}>Contingency Tracking</h3>
-              <div className="mb-2 flex justify-between text-xs"><span className={txt}>Used: {fmt(p.contingencyUsed)}</span><span className={txt}>Total: {fmt(p.contingencyTotal)}</span></div>
-              <ProgressBar value={parseFloat(contingencyPct)} color={parseFloat(contingencyPct)>75?'#ef4444':parseFloat(contingencyPct)>50?'#f59e0b':'#10b981'} height={12} showLabel={true}/>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ââ SCHEDULE TAB ââââââââââââââââââââââââââââââââ */}
-      {tab==='schedule' && (
-        <div className="fade-in space-y-6">
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Milestone Schedule</h3>
-            <div className="space-y-3">
-              {p.milestones.map((m,i) => {
-                const start = new Date(m.planned);
-                const allDates = p.milestones.map(x=>new Date(x.planned));
-                const minD = Math.min(...allDates);
-                const maxD = Math.max(...allDates);
-                const range = maxD - minD;
-                const left = range>0?((start-minD)/range)*100:0;
-                const barW = Math.max(8,100/p.milestones.length);
-                return (
-                  <div key={i} className={`flex items-center gap-4`}>
-                    <div className={`w-40 text-xs ${txtH} font-medium truncate`}>{m.name}</div>
-                    <div className={`flex-1 h-7 rounded relative ${d?'bg-slate-700':'bg-gray-100'}`}>
-                      <div className="absolute h-full rounded" style={{left:`${left}%`,width:`${barW}%`,background:m.status==='completed'?'#10b981':m.status==='in-progress'?'#3b82f6':'#475569',opacity:0.8}}/>
-                      <span className={`absolute right-2 top-1 text-xs ${txt}`}>{m.planned}</span>
-                    </div>
-                    <span className={`text-xs w-16 text-center px-2 py-1 rounded ${m.status==='completed'?'bg-emerald-600 text-white':m.status==='in-progress'?'bg-blue-600 text-white':'bg-gray-600 text-white'}`}>
-                      {m.status==='completed'?'Done':m.status==='in-progress'?`${m.pct}%`:'Plan'}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className={`${card} border rounded-xl p-5 flex flex-col items-center`}>
-              <Gauge value={p.spi} label="Schedule Performance Index" size={160}/>
-              <p className={`text-sm ${txt} mt-3`}>{p.spi>=1.0?'Ahead of schedule':p.spi>=0.95?'Slightly behind':'Behind schedule'}</p>
-            </div>
-            <div className={`${card} border rounded-xl p-5`}>
-              <h3 className={`font-bold ${txtH} mb-3`}>Critical Path Items</h3>
-              <div className="space-y-2">
-                {p.milestones.filter(m=>m.status!=='completed').slice(0,4).map((m,i)=>(
-                  <div key={i} className={`flex justify-between p-2 rounded ${d?'bg-slate-700/30':'bg-gray-50'}`}>
-                    <span className={`text-sm ${txtH}`}>{m.name}</span>
-                    <span className={`text-xs ${txt}`}>{m.planned}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ââ PROGRESS & EVM TAB âââââââââââââââââââââââââ */}
-      {tab==='progress' && (
-        <div className="fade-in space-y-6">
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Earned Value Trend</h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={p.evm}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>fmt(v)}/>
-                <Tooltip contentStyle={tooltipStyle} formatter={(v)=>fmtFull(v)}/>
-                <Legend/>
-                <Line type="monotone" dataKey="pv" name="Planned Value (PV)" stroke="#3b82f6" strokeWidth={2} dot={{r:4}}/>
-                <Line type="monotone" dataKey="ev" name="Earned Value (EV)" stroke="#10b981" strokeWidth={2} dot={{r:4}}/>
-                <Line type="monotone" dataKey="ac" name="Actual Cost (AC)" stroke="#f59e0b" strokeWidth={2} dot={{r:4}}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {label:'SPI',val:p.spi,desc:'EV / PV'},
-              {label:'CPI',val:p.cpi,desc:'EV / AC'},
-              {label:'SV',val:p.evm[p.evm.length-1].ev-p.evm[p.evm.length-1].pv,desc:'EV - PV',isCurrency:true},
-              {label:'CV',val:p.evm[p.evm.length-1].ev-p.evm[p.evm.length-1].ac,desc:'EV - AC',isCurrency:true}
-            ].map((k,i)=>(
-              <div key={i} className={`${card} border rounded-xl p-4 text-center`}>
-                <div className={`text-2xl font-bold ${k.isCurrency?(k.val>=0?'text-emerald-400':'text-red-400'):indexBg(k.val,d)}`}>
-                  {k.isCurrency?fmt(k.val):k.val.toFixed(2)}
-                </div>
-                <div className={`text-sm font-medium ${txtH} mt-1`}>{k.label}</div>
-                <div className={`text-xs ${txtMuted}`}>{k.desc}</div>
-              </div>
-            ))}
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>SPI / CPI Trend</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={p.evm.map(e=>({month:e.month,spi:+(e.ev/e.pv).toFixed(3),cpi:+(e.ev/e.ac).toFixed(3)}))}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} domain={[0.8,1.1]}/>
-                <Tooltip contentStyle={tooltipStyle}/>
-                <Legend/>
-                <Line type="monotone" dataKey="spi" name="SPI" stroke="#3b82f6" strokeWidth={2} dot={{r:4}}/>
-                <Line type="monotone" dataKey="cpi" name="CPI" stroke="#10b981" strokeWidth={2} dot={{r:4}}/>
-                <Line type="monotone" dataKey={() => 1.0} name="Baseline" stroke="#ef4444" strokeDasharray="5 5" strokeWidth={1} dot={false}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {/* ââ QA/QC TAB âââââââââââââââââââââââââââââââââââ */}
-      {tab==='quality' && (
-        <div className="fade-in space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {label:'Inspection Pass Rate',val:`${p.inspPassRate}%`,color:p.inspPassRate>=95?'text-emerald-400':'text-amber-400'},
-              {label:'Open NCRs',val:p.ncrCount-p.ncrClosed,color:p.ncrCount-p.ncrClosed>5?'text-red-400':'text-amber-400'},
-              {label:'NCR Closure Rate',val:`${((p.ncrClosed/p.ncrCount)*100).toFixed(0)}%`,color:'text-blue-400'},
-              {label:'Punch List',val:`${p.punchOpen} open / ${p.punchClosed} closed`,color:'text-gray-300'}
-            ].map((k,i)=>(
-              <div key={i} className={`${card} border rounded-xl p-4 text-center`}>
-                <div className={`text-2xl font-bold ${k.color}`}>{k.val}</div>
-                <div className={`text-xs ${txt} mt-2`}>{k.label}</div>
-              </div>
-            ))}
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Quality Metrics Overview</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={[
-                {name:'Inspections',passed:Math.round(p.inspPassRate/100*(p.punchOpen+p.punchClosed+20)),failed:Math.round((1-p.inspPassRate/100)*(p.punchOpen+p.punchClosed+20))},
-                {name:'NCRs',passed:p.ncrClosed,failed:p.ncrCount-p.ncrClosed},
-                {name:'Punch List',passed:p.punchClosed,failed:p.punchOpen}
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="name" stroke={d?'#9ca3af':'#6b7280'} fontSize={12}/>
-                <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <Tooltip contentStyle={tooltipStyle}/>
-                <Legend/>
-                <Bar dataKey="passed" name="Closed / Passed" fill="#10b981" stackId="a" radius={[0,0,0,0]}/>
-                <Bar dataKey="failed" name="Open / Failed" fill="#ef4444" stackId="a" radius={[4,4,0,0]}/>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {/* ââ HSE / SAFETY TAB ââââââââââââââââââââââââââââ */}
-      {tab==='safety' && (
-        <div className="fade-in space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {label:'TRIR',val:p.trir,color:p.trir<=0.7?'text-emerald-400':p.trir<=1.0?'text-amber-400':'text-red-400'},
-              {label:'LTIR',val:p.ltir,color:'text-blue-400'},
-              {label:'Incidents',val:p.incidents,color:p.incidents===0?'text-emerald-400':'text-amber-400'},
-              {label:'Near Misses',val:p.nearMisses,color:'text-amber-400'}
-            ].map((k,i)=>(
-              <div key={i} className={`${card} border rounded-xl p-4 text-center`}>
-                <div className={`text-3xl font-bold ${k.color}`}>{k.val}</div>
-                <div className={`text-xs ${txt} mt-2`}>{k.label}</div>
-              </div>
-            ))}
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Safety Performance Trend</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={[
-                {month:'Nov',trir:p.trir+0.15,obs:Math.round(p.safetyObs*0.6)},
-                {month:'Dec',trir:p.trir+0.10,obs:Math.round(p.safetyObs*0.7)},
-                {month:'Jan',trir:p.trir+0.05,obs:Math.round(p.safetyObs*0.8)},
-                {month:'Feb',trir:p.trir+0.02,obs:Math.round(p.safetyObs*0.85)},
-                {month:'Mar',trir:p.trir-0.02,obs:Math.round(p.safetyObs*0.92)},
-                {month:'Apr',trir:p.trir,obs:p.safetyObs}
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis yAxisId="left" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis yAxisId="right" orientation="right" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <Tooltip contentStyle={tooltipStyle}/>
-                <Legend/>
-                <Line yAxisId="left" type="monotone" dataKey="trir" name="TRIR" stroke="#ef4444" strokeWidth={2} dot={{r:4}}/>
-                <Line yAxisId="right" type="monotone" dataKey="obs" name="Safety Obs" stroke="#10b981" strokeWidth={2} dot={{r:4}}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-3`}>Safety Summary</h3>
-            <p className={`text-sm ${txt}`}>Total safety observations to date: <strong className={txtH}>{p.safetyObs}</strong></p>
-            <p className={`text-sm ${txt} mt-1`}>Man-hours worked (est.): <strong className={txtH}>{(p.progress*2500).toLocaleString()}</strong></p>
-            <p className={`text-sm ${txt} mt-1`}>Days since last recordable: <strong className={txtH}>{p.incidents===0?'All clear':Math.round(Math.random()*30+10)}</strong></p>
-          </div>
-        </div>
-      )}
-
-      {/* ââ PROCUREMENT TAB âââââââââââââââââââââââââââââ */}
-      {tab==='procurement' && (
-        <div className="fade-in space-y-6">
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-4`}>Long Lead Items</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className={tblHead}>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Item</th>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Vendor</th>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Expected Delivery</th>
-                  <th className={`text-left p-3 font-semibold ${txtH} border-b ${tblBorder}`}>Status</th>
-                </tr></thead>
-                <tbody>
-                  {p.longLead.map((l,i)=>(
-                    <tr key={i} className={`border-b ${tblBorder}`}>
-                      <td className={`p-3 ${txtH}`}>{l.item}</td>
-                      <td className={`p-3 ${txt}`}>{l.vendor}</td>
-                      <td className={`p-3 ${txt}`}>{l.due}</td>
-                      <td className="p-3">
-                        <span className={`text-xs font-semibold px-2 py-1 rounded ${l.status==='Delivered'?'bg-emerald-600 text-white':l.status==='In Transit'?'bg-blue-600 text-white':l.status==='Delayed'?'bg-red-600 text-white':'bg-amber-600 text-white'}`}>{l.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ââ DOCUMENTS TAB âââââââââââââââââââââââââââââââ */}
-      {tab==='docs' && (
-        <div className="fade-in space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              {label:'RFIs',total:p.docs.rfis,open:p.docs.rfisOpen,color:'#3b82f6'},
-              {label:'Submittals',total:p.docs.submittals,open:p.docs.submittalsOpen,color:'#8b5cf6'},
-              {label:'Drawings',total:p.docs.drawings,rev:p.docs.drawingsRev,color:'#10b981'}
-            ].map((dc,i)=>(
-              <div key={i} className={`${card} border rounded-xl p-5 text-center`}>
-                <div className="text-3xl font-bold" style={{color:dc.color}}>{dc.total}</div>
-                <div className={`text-sm font-medium ${txtH} mt-1`}>{dc.label}</div>
-                <div className={`text-xs ${txtMuted}`}>{dc.open!==undefined?`${dc.open} open`:`${dc.rev} under revision`}</div>
-              </div>
-            ))}
-          </div>
-          <div className={`${card} border rounded-xl p-5`}>
-            <h3 className={`font-bold ${txtH} mb-3`}>Document Status Summary</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={[
-                {name:'RFIs',closed:p.docs.rfis-p.docs.rfisOpen,open:p.docs.rfisOpen},
-                {name:'Submittals',closed:p.docs.submittals-p.docs.submittalsOpen,open:p.docs.submittalsOpen},
-                {name:'Drawings',closed:p.docs.drawings-p.docs.drawingsRev,open:p.docs.drawingsRev}
-              ]} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-                <XAxis type="number" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-                <YAxis type="category" dataKey="name" stroke={d?'#9ca3af':'#6b7280'} fontSize={12} width={80}/>
-                <Tooltip contentStyle={tooltipStyle}/>
-                <Legend/>
-                <Bar dataKey="closed" name="Closed/Issued" fill="#10b981" stackId="a"/>
-                <Bar dataKey="open" name="Open/In Review" fill="#f59e0b" stackId="a"/>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
+// ═══════════════════════════════════════════════════════════════
+//  VIEW — PORTFOLIO STATUS (Landing Page)
+// ═══════════════════════════════════════════════════════════════
+const PortfolioStatus = ({onSelectProject}) => (
+  <div className="fade-in" style={{padding:"0 24px 24px"}}>
+    <div style={{marginBottom:8}}>
+      <h1 style={{fontSize:22,fontWeight:800}}>{COMPANY} · Portfolio status</h1>
+      <div style={{fontSize:12,color:"#64748b"}}>{activeCount} active projects · {locations} locations · {WEEK} · {DATA_DATE}</div>
     </div>
-  );
-};
-
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// LAYER 2: EXECUTIVE DASHBOARD
-// Rolled-up portfolio view â high-level only, no nitty gritty
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const Layer2_Executive = ({onBack, dark}) => {
-  const d = dark;
-  const card = d?'bg-slate-800 border-slate-700':'bg-white border-gray-200';
-  const txt = d?'text-gray-300':'text-gray-600';
-  const txtH = d?'text-white':'text-gray-900';
-  const txtMuted = d?'text-gray-500':'text-gray-400';
-  const tooltipStyle = {backgroundColor:d?'#1e293b':'#fff',border:`1px solid ${d?'#334155':'#e5e7eb'}`,color:d?'#fff':'#111',borderRadius:'8px',fontSize:'12px'};
-
-  const totalValue = PROJECTS.reduce((s,p)=>s+p.contractValue,0);
-  const totalBudget = PROJECTS.reduce((s,p)=>s+p.budget,0);
-  const totalActual = PROJECTS.reduce((s,p)=>s+p.actual,0);
-  const totalForecast = PROJECTS.reduce((s,p)=>s+p.forecast,0);
-  const avgSPI = PROJECTS.reduce((s,p)=>s+p.spi,0)/PROJECTS.length;
-  const avgCPI = PROJECTS.reduce((s,p)=>s+p.cpi,0)/PROJECTS.length;
-  const totalCapacity = PROJECTS.reduce((s,p)=>s+p.capacity,0);
-  const totalMWDelivered = PROJECTS.reduce((s,p)=>s+p.mwDelivered,0);
-  const onTrack = PROJECTS.filter(p=>p.status==='On Track').length;
-  const atRisk = PROJECTS.filter(p=>p.status==='At Risk').length;
-  const delayed = PROJECTS.filter(p=>p.status==='Delayed').length;
-  const totalIncidents = PROJECTS.reduce((s,p)=>s+p.incidents,0);
-  const avgTRIR = PROJECTS.reduce((s,p)=>s+p.trir,0)/PROJECTS.length;
-  const totalOpenIssues = PROJECTS.reduce((s,p)=>s+p.openIssues,0);
-  const forecastVariance = totalBudget - totalForecast;
-  const COLORS = ['#10b981','#f59e0b','#ef4444'];
-
-  // Aggregated monthly data for portfolio
-  const portfolioMonths = ['Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26'];
-  const portfolioEVM = portfolioMonths.map(m => {
-    const row = {month:m,pv:0,ev:0,ac:0};
-    PROJECTS.forEach(p => {
-      const found = p.evm.find(e=>e.month===m);
-      if(found){row.pv+=found.pv;row.ev+=found.ev;row.ac+=found.ac;}
-    });
-    return {...row,spi:+(row.ev/row.pv).toFixed(3),cpi:+(row.ev/row.ac).toFixed(3)};
-  });
-
-  // Top 5 risks across portfolio
-  const allRisks = PROJECTS.flatMap(p=>p.risks.map(r=>({...r,project:p.name,score:r.prob*r.impact}))).sort((a,b)=>b.score-a.score).slice(0,5);
-
-  return (
-    <div className="fade-in p-4 md:p-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-          <button onClick={onBack} className="text-blue-500 hover:text-blue-400 text-sm font-medium mb-2 block">&larr; Back to Projects</button>
-          <h2 className={`text-2xl md:text-3xl font-bold ${txtH}`}>Executive Summary</h2>
-          <p className={`${txt} mt-1`}>Portfolio performance at a glance &middot; Updated April 2026</p>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        {[
-          {label:'Portfolio Value',val:fmt(totalValue),sub:'7 active projects',icon:'$'},
-          {label:'Avg SPI',val:avgSPI.toFixed(2),sub:avgSPI>=0.95?'On Schedule':'Attention Needed',color:indexColor(avgSPI),icon:'S'},
-          {label:'Avg CPI',val:avgCPI.toFixed(2),sub:avgCPI>=0.95?'Under Budget':'Monitor',color:indexColor(avgCPI),icon:'C'},
-          {label:'Forecast Variance',val:fmt(Math.abs(forecastVariance)),sub:forecastVariance>=0?'Under Budget':'Over Budget',color:forecastVariance>=0?'#10b981':'#ef4444',icon:'V'},
-          {label:'TRIR (Avg)',val:avgTRIR.toFixed(2),sub:`${totalIncidents} total incidents`,color:avgTRIR<=0.8?'#10b981':'#f59e0b',icon:'H'},
-          {label:'MW Capacity',val:`${totalMWDelivered}/${totalCapacity}`,sub:`${((totalMWDelivered/totalCapacity)*100).toFixed(0)}% delivered`,icon:'E'}
-        ].map((k,i)=>(
-          <div key={i} className={`${card} border rounded-xl p-4 kpi-hover`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className={`text-xs font-medium ${txt}`}>{k.label}</span>
-              <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${d?'bg-slate-700 text-blue-400':'bg-blue-50 text-blue-600'}`}>{k.icon}</span>
+    {/* KPI Strip */}
+    <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
+      <KPICard label="Total portfolio budget" value={fmt(totalBudget)} sub="+1.9% vs baseline" color="#e2e8f0"/>
+      <KPICard label="Active projects" value={activeCount} sub={`${locations} locations`} color="#e2e8f0"/>
+      <KPICard label="Portfolio avg SPI" value={avgSPI} sub={parseFloat(avgSPI)<1?"▼ Below 1.0 target":""} color={parseFloat(avgSPI)>=1?"#22c55e":"#f59e0b"} valueSize={24}/>
+      <KPICard label="Open risks" value={totalRisks} sub={`${highSevRisks} high severity`} color="#ef4444"/>
+      <KPICard label="In construction" value={inConstruction} sub={`${PROJECTS.filter(p=>p.phase==="Construction").map(p=>p.location.split(",")[1]?.trim()).filter((v,i,a)=>a.indexOf(v)===i).length} locations`} color="#e2e8f0"/>
+      <KPICard label="In design" value={inDesign} sub="" color="#e2e8f0"/>
+      <KPICard label="Safety TRIR" value={safetyTRIR} sub={parseFloat(safetyTRIR)<1?"▼ Below 1.0 ✓":""} color={parseFloat(safetyTRIR)<1?"#22c55e":"#f59e0b"}/>
+    </div>
+    {/* Project Cards Grid */}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+      {PROJECTS.map((p,i) => (
+        <div key={p.id} className="project-card card-hover" onClick={()=>onSelectProject(p)} style={{borderColor:ragColor(p.status)+"33"}}>
+          <div className="left-stripe" style={{background:ragColor(p.status)}}/>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8,paddingLeft:8}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                <span style={{fontSize:12,fontWeight:700,color:"#64748b"}}>{i+1}</span>
+                <span style={{fontSize:16,fontWeight:800}}>{p.code}</span>
+                {statusBadge(p.status)}
+              </div>
+              <div style={{fontSize:12,color:"#94a3b8"}}>{p.location}</div>
             </div>
-            <div className="text-xl font-bold" style={{color:k.color||'inherit'}}>{k.val}</div>
-            <div className={`text-xs ${txtMuted} mt-1`}>{k.sub}</div>
+          </div>
+          <div style={{paddingLeft:8}}>
+            <div style={{marginBottom:8}}>
+              <span className={`badge ${p.type==="Turnkey"?"badge-blue":"badge-amber"}`} style={{fontSize:10}}>{p.type}</span>
+            </div>
+            <div style={{display:"flex",gap:16,marginBottom:10}}>
+              <div><div style={{fontSize:9,color:"#64748b"}}>Budget</div><div style={{fontSize:14,fontWeight:800,color:ragColor(p.cost_rag)}}>{fmt(p.budget)}</div></div>
+              <div><div style={{fontSize:9,color:"#64748b"}}>SPI</div><div style={{fontSize:14,fontWeight:800,color:ragColor(p.schedule_rag)}}>{p.spiVal.toFixed(2)}</div></div>
+              <div><div style={{fontSize:9,color:"#64748b"}}>TRIR</div><div style={{fontSize:14,fontWeight:800,color:p.trir!=null?ragColor(p.safety_rag):"#64748b"}}>{p.trir!=null?p.trir.toFixed(2):"N/A"}</div></div>
+            </div>
+            {p.constructionComplete>0 && <div style={{marginBottom:4}}><div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#94a3b8",marginBottom:2}}><span>Construction</span><span>{p.constructionComplete}%</span></div><ProgressBar value={p.constructionComplete} color={ragColor(p.overall_rag)}/></div>}
+            {p.designComplete>0 && p.designComplete<100 && <div style={{marginBottom:4}}><div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#94a3b8",marginBottom:2}}><span>Design</span><span>{p.designComplete}%</span></div><ProgressBar value={p.designComplete} color="#3b82f6"/></div>}
+            {p.designComplete===100 && p.constructionComplete===0 && <div style={{marginBottom:4}}><div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#94a3b8",marginBottom:2}}><span>Design</span><span>100%</span></div><ProgressBar value={100} color="#22c55e"/></div>}
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#64748b",marginTop:8,borderTop:"1px solid #1e293b",paddingTop:6}}>
+              <span>{(p.risks?.length||0)} {p.risks?.length===1?"risk":"risks"} · {p.risks?.filter(r=>r.severity==="High"||r.severity==="Critical").length>0?"High":"Low"}</span>
+              <span>Updated {DATA_DATE}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+//  VIEW — PROJECT DETAIL
+// ═══════════════════════════════════════════════════════════════
+const ProjectDetail = ({project:p}) => {
+  const cv = (p.spiVal*p.bac - p.bac); const sv = ((p.spiVal-1)*p.bac); const vac = p.bac - p.eac; const tcpi = p.eac>0?((p.bac-(p.spiVal*p.bac))/(p.eac-(p.cpiVal*p.bac<p.eac?p.cpiVal*p.bac:p.eac*.9))):0;
+  return (
+  <div className="fade-in" style={{padding:"0 24px 24px"}}>
+    {/* Project Header */}
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+      <div>
+        <div style={{fontSize:11,color:"#64748b"}}>← portfolio / {p.code}</div>
+        <h1 style={{fontSize:22,fontWeight:800}}>{p.code} — {p.location}</h1>
+        <div style={{fontSize:13,color:"#94a3b8"}}>{p.type} · {p.phase}</div>
+        <div style={{fontSize:11,color:"#64748b"}}>{p.campus}</div>
+      </div>
+      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+        {statusBadge(p.status)}
+        <span style={{fontSize:11,color:"#64748b",cursor:"pointer"}}>Exec one-pager ↗</span>
+      </div>
+    </div>
+
+    {/* Project Info Table */}
+    <div className="section-card" style={{marginBottom:16}}>
+      <SectionTitle icon="📋" title="Project information" extra={<span style={{fontSize:10,color:"#64748b"}}>Updated {DATA_DATE}</span>}/>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:8}}>
+        {[["PROJECT ID",p.code],["LOCATION",p.location],["TYPE",p.type],["CONTRACT VALUE",fmt(p.contractValue)],["START DATE",p.startDate||"—"],["COMPLETION",p.completion||"—"],["PHASE",p.phase]].map(([k,v])=>(
+          <div key={k} style={{background:"#0f172a",borderRadius:4,padding:"6px 8px"}}><div style={{fontSize:8,color:"#64748b",fontWeight:700,textTransform:"uppercase",letterSpacing:".5px"}}>{k}</div><div style={{fontSize:12,fontWeight:700}}>{v}</div></div>
+        ))}
+      </div>
+    </div>
+
+    {/* KPI Cards Row */}
+    <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+      <KPICard label="% Complete" value={`${p.percentComplete}%`} sub={p.phase==="Construction"?`+${Math.round(p.percentComplete/10)}d float`:"Design phase"} color={ragColor(p.schedule_rag)} badges={["P6"]} valueSize={26}/>
+      <KPICard label="SPI" value={p.spiVal.toFixed(2)} sub={p.spiVal>=1?"On schedule":p.spiVal>=0.95?"Slight lag":"Behind schedule"} color={ragColor(p.schedule_rag)} badges={["Smart PM"]} valueSize={26}/>
+      <KPICard label="EAC" value={fmt(p.eac)} sub={p.eac>p.bac?`+${fmt(p.eac-p.bac)} vs budget`:"Under budget"} color={ragColor(p.cost_rag)} badges={["Coupa"]} valueSize={26}/>
+      <KPICard label="TRIR" value={p.trir!=null?p.trir.toFixed(2):"N/A"} sub={p.trir!=null?`${p.ifdStreak||0} IFD streak`:"Design phase"} color={p.trir!=null?ragColor(p.safety_rag):"#64748b"} badges={["Procore"]} valueSize={26}/>
+      <KPICard label="Open RFIs" value={p.openRFIs} sub={`${p.highPriorityRFIs} high priority`} color={p.highPriorityRFIs>2?"#ef4444":"#f59e0b"} valueSize={26}/>
+      <KPICard label="LLE at risk" value={p.lleAtRisk} sub={p.lleDetail} color={p.lleAtRisk>0?"#ef4444":"#22c55e"} badges={["Coupa"]} valueSize={26}/>
+    </div>
+
+    {/* EVM Section */}
+    {p.evmData && (
+    <div className="section-card" style={{marginBottom:16}}>
+      <SectionTitle icon="📊" title="Earned value management (EVM)" badges={["Smart PM","P6"]} extra={<span style={{fontSize:10,color:"#64748b"}}>Updated {DATA_DATE}</span>}/>
+      <div style={{display:"flex",gap:16,marginBottom:12,flexWrap:"wrap"}}>
+        {[["CPI",p.cpiVal.toFixed(2),"Cost perf. index"],["SPI",p.spiVal.toFixed(2),"Schedule perf."],["CV",fmt(cv),"Cost variance"],["SV",fmt(sv),"Sched. variance"],["EAC",fmt(p.eac),"Est. at compl."],["VAC",fmt(vac),"Variance at compl."],["TCPI",tcpi.toFixed(2),"To-complete perf."],["BAC",fmt(p.bac),"Budget at compl."]].map(([k,v,s])=>(
+          <div key={k} style={{textAlign:"center",minWidth:70}}>
+            <div style={{fontSize:18,fontWeight:800,color:k==="CV"||k==="SV"||k==="VAC"?(parseFloat(v.replace(/[^0-9.-]/g,""))<0?"#ef4444":"#22c55e"):k==="TCPI"?(parseFloat(v)>1.05?"#ef4444":"#f59e0b"):"#e2e8f0"}}>{v}</div>
+            <div style={{fontSize:9,color:"#64748b"}}>{s}</div>
           </div>
         ))}
       </div>
+      <div style={{height:250}}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={p.evmData} margin={{top:5,right:20,bottom:5,left:10}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+            <XAxis dataKey="m" tick={{fontSize:9,fill:"#64748b"}} axisLine={{stroke:"#1e293b"}}/>
+            <YAxis tick={{fontSize:9,fill:"#64748b"}} axisLine={{stroke:"#1e293b"}} tickFormatter={v=>"$"+Math.round(v/1e6)+"M"}/>
+            <Tooltip contentStyle={{background:"#1e293b",border:"1px solid #334155",borderRadius:6,fontSize:11}} formatter={v=>v?["$"+Math.round(v/1e6)+"M"]:["—"]}/>
+            <Line type="monotone" dataKey="pv" stroke="#3b82f6" strokeWidth={2} dot={false} name="PV — Planned value" strokeDasharray="6 3"/>
+            <Line type="monotone" dataKey="ev" stroke="#22c55e" strokeWidth={2.5} dot={false} name="EV — Earned value"/>
+            <Line type="monotone" dataKey="ac" stroke="#ef4444" strokeWidth={2} dot={false} name="AC — Actual cost" strokeDasharray="4 2"/>
+            <Line type="monotone" dataKey="eacFc" stroke="#f59e0b" strokeWidth={2} dot={false} name="EAC forecast" strokeDasharray="8 4"/>
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+      {p.eac>p.bac && <div style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.3)",borderRadius:6,padding:"8px 12px",marginTop:8,fontSize:11,color:"#fca5a5"}}>⚠ EV below PV = behind schedule by {fmt(Math.abs(sv))} · AC above EV = spending more than earned · TCPI {tcpi.toFixed(2)}{tcpi>1?" = must improve efficiency to recover budget":""}</div>}
+    </div>
+    )}
 
-      {/* Row 2: Status Distribution + Performance Trend */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Project Status Distribution</h3>
-          <div className="flex items-center gap-6">
-            <div style={{width:180,height:180}}>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie data={[{name:'On Track',value:onTrack},{name:'At Risk',value:atRisk},{name:'Delayed',value:delayed}]} dataKey="value" cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={4}>
-                    {[0,1,2].map(i=><Cell key={i} fill={COLORS[i]}/>)}
-                  </Pie>
-                  <Tooltip contentStyle={tooltipStyle}/>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"/><span className={`text-sm ${txtH}`}>{onTrack} On Track ({((onTrack/7)*100).toFixed(0)}%)</span></div>
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500"/><span className={`text-sm ${txtH}`}>{atRisk} At Risk ({((atRisk/7)*100).toFixed(0)}%)</span></div>
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500"/><span className={`text-sm ${txtH}`}>{delayed} Delayed ({((delayed/7)*100).toFixed(0)}%)</span></div>
-            </div>
+    {/* 3-Week Look-Ahead */}
+    {p.lookAhead && (
+    <div className="section-card" style={{marginBottom:16}}>
+      <SectionTitle icon="📅" title="3-week look-ahead" badges={["Primavera P6"]} extra={<span style={{fontSize:10,color:"#64748b"}}>Updated {DATA_DATE}</span>}/>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {p.lookAhead.map((item,i) => (
+          <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:200,fontSize:11,color:"#cbd5e1"}}>{item.name}</div>
+            <span className={`badge ${item.status==="Complete"?"badge-green":item.status==="In progress"?"badge-blue":item.status==="BLOCKED"?"badge-red":item.status==="Overdue"?"badge-red":item.status==="Monitor"?"badge-amber":"badge-amber"}`} style={{fontSize:9,minWidth:70,textAlign:"center"}}>{item.status}</span>
+            <div style={{flex:1}}><ProgressBar value={item.pct} color={item.status==="Complete"?"#22c55e":item.status==="BLOCKED"?"#ef4444":item.status==="Overdue"?"#ef4444":item.status==="Monitor"?"#f59e0b":"#3b82f6"}/></div>
           </div>
-        </div>
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Portfolio SPI / CPI Trend</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={portfolioEVM}>
-              <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-              <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-              <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} domain={[0.85,1.05]}/>
-              <Tooltip contentStyle={tooltipStyle}/>
-              <Legend/>
-              <Line type="monotone" dataKey="spi" name="SPI" stroke="#3b82f6" strokeWidth={2} dot={{r:3}}/>
-              <Line type="monotone" dataKey="cpi" name="CPI" stroke="#10b981" strokeWidth={2} dot={{r:3}}/>
-            </LineChart>
-          </ResponsiveContainer>
+        ))}
+        <div style={{display:"flex",gap:12,marginTop:4,fontSize:9,color:"#64748b"}}>
+          {[["Complete","#22c55e"],["In progress","#3b82f6"],["Monitor","#f59e0b"],["Critical","#ef4444"]].map(([l,c])=>(<div key={l} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:8,height:8,borderRadius:2,background:c}}/>{l}</div>))}
         </div>
       </div>
+    </div>
+    )}
 
-      {/* Row 3: Budget Overview + Cash Flow */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Budget vs Actual by Project</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={PROJECTS.map(p=>({name:p.code,budget:p.budget/1e6,actual:p.actual/1e6,forecast:p.forecast/1e6}))}>
-              <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-              <XAxis dataKey="name" stroke={d?'#9ca3af':'#6b7280'} fontSize={10}/>
-              <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>`$${v}M`}/>
-              <Tooltip contentStyle={tooltipStyle} formatter={(v)=>`$${v.toFixed(0)}M`}/>
-              <Legend/>
-              <Bar dataKey="budget" name="Budget" fill="#3b82f6" radius={[3,3,0,0]}/>
-              <Bar dataKey="actual" name="Actual" fill="#f59e0b" radius={[3,3,0,0]}/>
+    {/* Cost & Procurement + Site Safety Row */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
+      {/* Trade Progress */}
+      {p.tradeProgress && (
+      <div className="section-card">
+        <SectionTitle icon="🔧" title="Cost & procurement" badges={["Smart PM","Procore","Coupa"]}/>
+        <div style={{height:180}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={Object.entries(p.tradeProgress).map(([k,v])=>({trade:k,actual:v,projected:Math.min(v+15,100)}))} margin={{top:5,right:5,bottom:5,left:5}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+              <XAxis dataKey="trade" tick={{fontSize:9,fill:"#64748b"}}/>
+              <YAxis tick={{fontSize:9,fill:"#64748b"}}/>
+              <Bar dataKey="actual" fill="#3b82f6" radius={[3,3,0,0]} barSize={20}/>
+              <Bar dataKey="projected" fill="#1e3a5f" radius={[3,3,0,0]} barSize={20}/>
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Portfolio Earned Value</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={portfolioEVM}>
-              <CartesianGrid strokeDasharray="3 3" stroke={d?'#334155':'#e5e7eb'}/>
-              <XAxis dataKey="month" stroke={d?'#9ca3af':'#6b7280'} fontSize={11}/>
-              <YAxis stroke={d?'#9ca3af':'#6b7280'} fontSize={11} tickFormatter={v=>fmt(v)}/>
-              <Tooltip contentStyle={tooltipStyle} formatter={v=>fmtFull(v)}/>
-              <Legend/>
-              <Area type="monotone" dataKey="pv" name="Planned Value" stroke="#3b82f6" fill="#3b82f622" strokeWidth={2}/>
-              <Area type="monotone" dataKey="ev" name="Earned Value" stroke="#10b981" fill="#10b98122" strokeWidth={2}/>
-              <Area type="monotone" dataKey="ac" name="Actual Cost" stroke="#f59e0b" fill="#f59e0b22" strokeWidth={2}/>
-            </AreaChart>
+        <div style={{fontSize:9,color:"#64748b",display:"flex",gap:8,marginTop:4}}><span>— Actual</span><span style={{color:"#334155"}}>— Projected</span></div>
+        {p.eac>p.bac && <div style={{background:"rgba(245,158,11,.1)",border:"1px solid rgba(245,158,11,.3)",borderRadius:4,padding:"6px 10px",marginTop:8,fontSize:10,color:"#fbbf24"}}>⚠ EAC +{fmt(p.eac-p.bac)} vs budget. {p.lleDetail!=="—"?p.lleDetail+" driving variance.":""}</div>}
+      </div>
+      )}
+
+      {/* Site Log & Safety */}
+      <div className="section-card">
+        <SectionTitle icon="🚨" title="Site log & safety" badges={["Procore"]} extra={<span style={{fontSize:10,color:"#64748b"}}>Updated {DATA_DATE}</span>}/>
+        {p.phase==="Construction" ? (
+        <div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+            <div style={{background:"#0f172a",borderRadius:6,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:"#64748b"}}>Active workers</div><div style={{fontSize:22,fontWeight:800}}>{p.activeWorkers}</div><div style={{fontSize:9,color:"#64748b"}}>of {p.targetWorkers} target</div></div>
+            <div style={{background:"#0f172a",borderRadius:6,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:"#64748b"}}>TRIR</div><div style={{fontSize:22,fontWeight:800,color:ragColor(p.safety_rag)}}>{p.trir?.toFixed(2)||"—"}</div></div>
+            <div style={{background:"#0f172a",borderRadius:6,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:"#64748b"}}>IFD streak</div><div style={{fontSize:22,fontWeight:800,color:"#22c55e"}}>{p.ifdStreak||0}d</div></div>
+            <div style={{background:"#0f172a",borderRadius:6,padding:10,textAlign:"center"}}><div style={{fontSize:9,color:"#64748b"}}>Near misses MTD</div><div style={{fontSize:22,fontWeight:800}}>{p.nearMisses||0}</div></div>
+          </div>
+          {p.equipment && <div><div style={{fontSize:10,fontWeight:700,color:"#94a3b8",marginBottom:4,textTransform:"uppercase"}}>Critical Equipment</div>{p.equipment.map((e,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"3px 0",fontSize:11,borderBottom:"1px solid #1e293b"}}><span>{e.name}</span><span className={`badge ${e.status==="ACTIVE"?"badge-green":"badge-amber"}`} style={{fontSize:9}}>{e.status}</span></div>))}</div>}
+        </div>
+        ) : <div style={{color:"#64748b",fontSize:12,textAlign:"center",padding:20}}>Design phase — no site activity</div>}
+      </div>
+
+      {/* RFI Tracker */}
+      <div className="section-card">
+        <SectionTitle icon="📝" title="RFI tracker" extra={<span className="badge badge-amber" style={{fontSize:9}}>{p.openRFIs} open</span>}/>
+        {p.rfis ? p.rfis.map((r,i)=>(
+          <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #1e293b",fontSize:11}}>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}><span style={{color:"#64748b",fontWeight:700}}>{r.id}</span><span>{r.desc}</span></div>
+            <span style={{color:sevColor(r.priority),fontWeight:700,fontSize:10}}>{r.priority}</span>
+          </div>
+        )) : <div style={{color:"#64748b",fontSize:11}}>No open RFIs</div>}
+        {p.workforce && <div style={{marginTop:12}}><div style={{fontSize:10,fontWeight:700,color:"#94a3b8",marginBottom:6,textTransform:"uppercase"}}>Workforce by trade</div>{Object.entries(p.workforce).map(([k,v])=>(<div key={k} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{width:60,fontSize:10,color:"#94a3b8"}}>{k}</span><div style={{flex:1}}><ProgressBar value={v} color={k==="MEP"?"#22c55e":k==="Steel"?"#64748b":k==="Electrical"?"#f59e0b":"#ef4444"}/></div><span style={{fontSize:10,color:"#94a3b8",width:30,textAlign:"right"}}>{v}%</span></div>))}</div>}
+      </div>
+    </div>
+
+    {/* Risk Register + Procurement Log */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+      <div className="section-card">
+        <SectionTitle icon="⚠️" title="Risk register" extra={<div style={{display:"flex",gap:4}}>{p.risks?.filter(r=>r.severity==="Critical").length>0 && <span className="badge badge-red" style={{fontSize:9}}>{p.risks.filter(r=>r.severity==="Critical").length} critical</span>}{p.risks?.filter(r=>r.severity==="High").length>0 && <span className="badge badge-amber" style={{fontSize:9}}>{p.risks.filter(r=>r.severity==="High").length} high</span>}</div>}/>
+        <table className="data-table">
+          <thead><tr><th>#</th><th>Risk Description</th><th>Category</th><th>Severity</th><th>Cost Impact</th><th>Sched.</th><th>Owner</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            {(p.risks||[]).map(r=>(
+              <tr key={r.id}><td style={{fontWeight:700}}>{r.id}</td><td style={{maxWidth:180}}>{r.desc}</td><td><span className="badge badge-blue" style={{fontSize:9}}>{r.cat}</span></td><td><span style={{color:sevColor(r.severity),fontWeight:700}}>{r.severity}</span></td><td style={{color:"#f59e0b"}}>{r.costImpact}</td><td>{r.schedImpact}</td><td style={{fontSize:10}}>{r.owner}</td><td style={{fontSize:10,maxWidth:150}}>{r.mitigation}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="section-card">
+        <SectionTitle icon="📦" title="Procurement log — key items" extra={<span className="badge badge-amber" style={{fontSize:9}}>{p.lleAtRisk} at risk</span>}/>
+        {p.procurement ? (
+        <table className="data-table">
+          <thead><tr><th>PO #</th><th>Item Description</th><th>Vendor</th><th>Value</th><th>Lead</th><th>Status</th></tr></thead>
+          <tbody>
+            {p.procurement.map(po=>(
+              <tr key={po.po}><td style={{fontWeight:700,fontSize:10}}>{po.po}</td><td style={{maxWidth:160,fontSize:10}}>{po.desc}</td><td>{po.vendor}</td><td>{fmt(po.value)}</td><td>{po.leadTime}</td><td><span className={`badge ${po.status==="Critical delay"?"badge-red":po.status==="At risk"?"badge-amber":po.status==="Delivered"||po.status==="On site"?"badge-green":"badge-blue"}`} style={{fontSize:9}}>{po.status}</span></td></tr>
+            ))}
+          </tbody>
+        </table>
+        ) : <div style={{color:"#64748b",fontSize:11,textAlign:"center",padding:16}}>No procurement data for design phase</div>}
+      </div>
+    </div>
+  </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  VIEW — EXECUTIVE MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+const ExecutiveManagement = () => (
+  <div className="fade-in" style={{padding:"0 24px 24px"}}>
+    <div style={{marginBottom:16}}>
+      <h1 style={{fontSize:22,fontWeight:800}}>{COMPANY} · Executive summary</h1>
+      <div style={{fontSize:12,color:"#94a3b8"}}>Program Director (—) · VP Construction (—) · VP Operations (—) · {WEEK} · {DATA_DATE}</div>
+    </div>
+    {/* Top KPIs */}
+    <div style={{display:"flex",gap:10,marginBottom:20,alignItems:"center",flexWrap:"wrap"}}>
+      <KPICard label="Total portfolio budget" value={fmt(totalBudget)} sub="+1.9% vs baseline" color="#e2e8f0" valueSize={26}/>
+      <KPICard label="Active projects" value={activeCount} sub={`${locations} locations`} color="#e2e8f0" valueSize={26}/>
+      <KPICard label="Portfolio avg SPI" value={avgSPI} sub="▼ Below 1.0 target" color="#f59e0b" valueSize={26}/>
+      <KPICard label="Open risks" value={totalRisks} sub={`${highSevRisks} high severity`} color="#ef4444" valueSize={26}/>
+      <KPICard label="In construction" value={inConstruction} color="#e2e8f0" valueSize={26}/>
+      <KPICard label="In design" value={inDesign} color="#e2e8f0" valueSize={26}/>
+      <div style={{display:"flex",alignItems:"center",gap:4}}>
+        <span className="badge badge-green" style={{fontSize:10}}>{onTrackCount} On track</span>
+        <span className="badge badge-amber" style={{fontSize:10}}>{atRiskCount} At risk</span>
+        <span className="badge badge-red" style={{fontSize:10}}>{criticalCount} Critical</span>
+      </div>
+      <HealthGauge pct={portfolioHealth}/>
+    </div>
+
+    {/* Charts Row */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:16}}>
+      {/* SPI Performance */}
+      <div className="section-card">
+        <SectionTitle icon="📈" title="SPI performance — portfolio" badges={["Smart PM"]}/>
+        <div style={{textAlign:"center",marginBottom:10}}>
+          <div style={{fontSize:48,fontWeight:900,color:"#f59e0b"}}>{avgSPI}</div>
+          <div style={{fontSize:11,color:"#64748b"}}>Portfolio avg SPI · {activeCount} projects</div>
+        </div>
+        <div style={{height:140}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={[{q:"Q1",target:1.0,actual:0.97},{q:"Q2",target:1.0,actual:0.95},{q:"Q3",target:1.0,actual:0.94},{q:"Q4 Fcst",target:1.0,actual:0.92}]} margin={{top:5,right:5,bottom:5,left:5}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+              <XAxis dataKey="q" tick={{fontSize:9,fill:"#64748b"}}/>
+              <YAxis domain={[0.85,1.05]} tick={{fontSize:9,fill:"#64748b"}}/>
+              <Bar dataKey="target" fill="#f59e0b" barSize={16} radius={[3,3,0,0]}/>
+              <Bar dataKey="actual" fill="#3b82f6" barSize={16} radius={[3,3,0,0]}/>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={{display:"flex",gap:12,justifyContent:"center",fontSize:9,color:"#64748b"}}><span>— Target</span><span style={{color:"#3b82f6"}}>— Actual</span></div>
+      </div>
+
+      {/* Budget Performance */}
+      <div className="section-card">
+        <SectionTitle icon="💰" title="Budget performance" badges={["Smart PM","Coupa"]}/>
+        <div style={{marginBottom:12}}>
+          {[["Hard costs",61],["Soft costs",23],["Contingency",16]].map(([k,v])=>(
+            <div key={k} style={{marginBottom:6}}><div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#94a3b8",marginBottom:2}}><span>{k}</span><span style={{color:k==="Contingency"?"#f59e0b":"#e2e8f0"}}>{v}%</span></div><ProgressBar value={v} color={k==="Hard costs"?"#3b82f6":k==="Soft costs"?"#64748b":"#f59e0b"} height={8}/></div>
+          ))}
+        </div>
+        <div style={{height:150}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={[{q:"Q1",planned:800,actual:780,committed:750},{q:"Q2",planned:950,actual:920,committed:900},{q:"Q3",planned:1100,actual:1050,committed:null},{q:"Q4 Fcst",planned:1200,actual:null,forecast:1250}]} margin={{top:5,right:5,bottom:5,left:5}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+              <XAxis dataKey="q" tick={{fontSize:9,fill:"#64748b"}}/>
+              <YAxis tick={{fontSize:9,fill:"#64748b"}} tickFormatter={v=>"$"+v+"M"}/>
+              <Bar dataKey="planned" fill="#22c55e" barSize={14} radius={[2,2,0,0]}/>
+              <Bar dataKey="actual" fill="#3b82f6" barSize={14} radius={[2,2,0,0]}/>
+              <Bar dataKey="forecast" fill="#f59e0b" barSize={14} radius={[2,2,0,0]}/>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Row 4: Top Risks + Project Health */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Top 5 Portfolio Risks</h3>
-          <div className="space-y-2">
-            {allRisks.map((r,i)=>(
-              <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${d?'bg-slate-700/30':'bg-gray-50'}`}>
-                <RiskBadge score={r.score}/>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${txtH}`}>{r.desc}</p>
-                  <p className={`text-xs ${txtMuted}`}>{r.project} &middot; {r.status}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Risk Matrix */}
+      <div className="section-card">
+        <SectionTitle icon="🎯" title="Risk matrix — portfolio" badges={["Smart PM","Airtable"]}/>
+        <RiskMatrix/>
+        <div style={{marginTop:10}}>
+          {topRisks.map((r,i)=>(
+            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 0",borderBottom:"1px solid #1e293b",fontSize:10}}>
+              <div style={{display:"flex",gap:6,alignItems:"center"}}><span style={{fontWeight:800,color:"#94a3b8"}}>R{i+1}</span><span>{r.desc.substring(0,35)}...</span></div>
+              <div style={{display:"flex",gap:4,alignItems:"center"}}><span className={`badge ${r.severity==="Critical"?"badge-red":"badge-amber"}`} style={{fontSize:8}}>{r.severity==="Critical"?"Escalate":"In prog"}</span>{r.schedImpact && <span style={{fontSize:9,color:"#64748b"}}>{r.schedImpact}</span>}</div>
+            </div>
+          ))}
         </div>
-        <div className={`${card} border rounded-xl p-5`}>
-          <h3 className={`font-bold ${txtH} mb-4`}>Project Health Summary</h3>
-          <div className="space-y-3">
-            {PROJECTS.map(p=>(
-              <div key={p.id} className={`flex items-center gap-3`}>
-                <span className="w-3 h-3 rounded-full" style={{background:statusColor(p.status)}}/>
-                <span className={`text-sm ${txtH} w-36 truncate`}>{p.name}</span>
-                <div className="flex-1"><ProgressBar value={p.progress} color={statusColor(p.status)} height={6} showLabel={false}/></div>
-                <span className={`text-xs font-mono w-10 text-right ${indexBg(p.spi,d)}`}>{p.spi.toFixed(2)}</span>
-                <span className={`text-xs font-mono w-10 text-right ${indexBg(p.cpi,d)}`}>{p.cpi.toFixed(2)}</span>
-                <span className={`text-xs w-12 text-right ${txt}`}>{p.progress}%</span>
+        {topRisks.some(r=>r.severity==="Critical") && <div style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.3)",borderRadius:4,padding:"6px 10px",marginTop:8,fontSize:10,color:"#fca5a5"}}>⚠ {topRisks.filter(r=>r.severity==="Critical").length} critical risk(s) — executive intervention required.</div>}
+      </div>
+    </div>
+
+    {/* Portfolio RAG Summary Table */}
+    <div className="section-card">
+      <SectionTitle icon="📊" title={`Portfolio RAG summary — all ${activeCount} projects`}/>
+      <table className="data-table">
+        <thead><tr><th>Project</th><th>Location</th><th>Phase</th><th>Type</th><th>SPI</th><th>Budget %</th><th>Safety</th><th>Schedule</th><th>Cost</th><th>Overall</th></tr></thead>
+        <tbody>
+          {PROJECTS.map(p=>(
+            <tr key={p.id}>
+              <td style={{fontWeight:800,color:ragColor(p.overall_rag)}}>{p.code}</td>
+              <td>{p.location.split(",")[0]}</td>
+              <td><span className={`badge ${p.phase==="Construction"?"badge-green":"badge-blue"}`} style={{fontSize:9}}>{p.phase}</span></td>
+              <td><span className={`badge ${p.type==="Turnkey"?"badge-blue":"badge-amber"}`} style={{fontSize:9}}>{p.type==="Turnkey"?"Turnkey":"C&S"}</span></td>
+              <td style={{fontWeight:700,color:ragColor(p.schedule_rag)}}>{p.spiVal.toFixed(2)}</td>
+              <td style={{color:ragColor(p.cost_rag)}}>{p.eac&&p.bac?Math.round((p.eac/p.bac)*100)+"%":"—"}</td>
+              <td>{p.trir!=null?p.trir.toFixed(2):"N/A"}</td>
+              <td>{statusBadge(p.schedule_rag)}</td>
+              <td>{statusBadge(p.cost_rag)}</td>
+              <td>{statusBadge(p.overall_rag)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+//  VIEW — EXEC ONE-PAGER
+// ═══════════════════════════════════════════════════════════════
+const ExecOnePager = ({project:p}) => (
+  <div className="fade-in" style={{padding:"0 24px 24px"}}>
+    <div style={{marginBottom:16}}>
+      <h2 style={{fontSize:18,fontWeight:800}}>Exec one-pager · {p.code}</h2>
+      <div style={{fontSize:12,color:"#94a3b8"}}>{p.name} — {p.location} · {p.type} · {p.phase}</div>
+    </div>
+
+    {/* Domain Health Scorecard */}
+    <div className="section-card" style={{marginBottom:16}}>
+      <SectionTitle icon="🏥" title="Domain health scorecard"/>
+      <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+        <DomainCard label="Schedule" value={p.spiVal.toFixed(2)} sub={`SPI · ${p.spiVal>=0.95?"on float":"schedule lag"}`} rag={p.schedule_rag} badges={["Smart PM","P6"]}/>
+        <DomainCard label="Cost" value={fmt(p.eac)} sub={`EAC · ${p.eac>p.bac?"+"+fmt(p.eac-p.bac)+" variance":"under budget"}`} rag={p.cost_rag} badges={["Smart PM","Coupa"]}/>
+        <DomainCard label="Change Orders" value={`${p.changeOrders} COs`} sub={`${fmt(p.coImpact)} impact · ${p.coSchedule}`} rag={p.changeOrders>4?"Critical":p.changeOrders>2?"Amber":"Green"} badges={["Procore"]}/>
+        <DomainCard label="Quality" value={p.inspectionPassRate!=null?p.inspectionPassRate+"%":"N/A"} sub="Inspection pass rate" rag={p.inspectionPassRate>=95?"Green":p.inspectionPassRate>=90?"Amber":"Critical"} badges={["Procore"]}/>
+        <DomainCard label="Safety" value={p.trir!=null?p.trir.toFixed(2):"N/A"} sub={p.trir!=null?`TRIR · ${p.ifdStreak||0} IFD`:"Design phase"} rag={p.safety_rag} badges={["Procore"]}/>
+        <DomainCard label="Procurement LLE" value={p.lleAtRisk>0?`${p.lleAtRisk} at risk`:"Clear"} sub={p.lleDetail} rag={p.lleAtRisk>1?"Critical":p.lleAtRisk>0?"Amber":"Green"} badges={["Coupa","Procore"]}/>
+      </div>
+    </div>
+
+    {/* SPI Trend + Milestones + Cash Flow */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
+      <div className="section-card">
+        <SectionTitle icon="📊" title="SPI trend & budget utilisation" badges={["Smart PM"]}/>
+        <div style={{height:150}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={p.spiHistory.map((v,i)=>({q:["Q1","Q2","Q3","Q4 Fcst"][i],spi:v}))} margin={{top:5,right:20,bottom:5,left:10}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+              <XAxis dataKey="q" tick={{fontSize:9,fill:"#64748b"}}/>
+              <YAxis domain={[0.85,1.05]} tick={{fontSize:9,fill:"#64748b"}}/>
+              <Line type="monotone" dataKey="spi" stroke="#f59e0b" strokeWidth={2.5} dot={{r:5,fill:"#f59e0b",stroke:"#0f172a",strokeWidth:2}}/>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        {p.tradeProgress && <div style={{marginTop:8}}>{Object.entries(p.tradeProgress).map(([k,v])=>(
+          <div key={k} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{width:60,fontSize:10,color:"#94a3b8"}}>{k}</span><div style={{flex:1}}><ProgressBar value={v} color={k==="MEP"?"#22c55e":k==="Steel"?"#64748b":k==="Electrical"?"#f59e0b":"#ef4444"} height={8}/></div><span style={{fontSize:10,color:"#e2e8f0",fontWeight:700,width:35,textAlign:"right"}}>{v}%</span></div>
+        ))}</div>}
+      </div>
+
+      <div className="section-card">
+        <SectionTitle icon="🏁" title="Milestone status"/>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          {(p.milestones||[]).map((m,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:m.status==="Complete"?"#22c55e":m.status==="In progress"?"#3b82f6":m.status==="BLOCKED"?"#ef4444":m.status==="At risk"?"#f59e0b":"#64748b",flexShrink:0}}/>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:600,color:m.status==="BLOCKED"?"#ef4444":"#e2e8f0"}}>{m.name}</div>
+                {m.date && <div style={{fontSize:10,color:"#64748b"}}>{m.date}</div>}
+                {!m.date && m.status!=="Complete" && <div style={{fontSize:10,color:"#64748b"}}>{m.status}</div>}
               </div>
-            ))}
-          </div>
-          <div className={`mt-3 pt-2 border-t ${d?'border-slate-700':'border-gray-200'} flex gap-6 text-xs ${txtMuted}`}>
-            <span>SPI</span><span>CPI</span><span>Progress</span>
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
-  );
-};
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// MAIN APP - Navigation between 3 layers
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-const App = () => {
-  const [layer,setLayer] = useState(0); // 0=projects, 1=detail, 2=executive
-  const [selectedProject,setSelectedProject] = useState(null);
-  const [dark,setDark] = useState(true);
-
-  const handleSelectProject = (p) => { setSelectedProject(p); setLayer(1); };
-  const handleGoExecutive = () => setLayer(2);
-  const handleBackToProjects = () => { setLayer(0); setSelectedProject(null); };
-
-  return (
-    <div className={dark?'bg-slate-900 text-gray-100 min-h-screen':'bg-gray-50 text-gray-900 min-h-screen'}>
-      {/* Top Nav Bar */}
-      <div className={`fixed top-0 left-0 right-0 z-50 ${dark?'bg-slate-800/95 border-slate-700':'bg-white/95 border-gray-200'} border-b backdrop-blur-sm`}>
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-sm">RD</div>
-            <div>
-              <h1 className={`text-base font-bold ${dark?'text-white':'text-gray-900'}`}>Rowan Digital</h1>
-              <p className={`text-xs ${dark?'text-gray-400':'text-gray-500'}`}>Project Management Dashboard</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {/* Layer indicators */}
-            <div className="hidden md:flex items-center gap-1 text-xs">
-              <button onClick={handleBackToProjects} className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${layer===0?(dark?'bg-blue-600/20 text-blue-400':'bg-blue-100 text-blue-700'):(dark?'text-gray-400 hover:text-gray-200':'text-gray-500 hover:text-gray-700')}`}>Projects</button>
-              <span className={dark?'text-gray-600':'text-gray-300'}>/</span>
-              <button disabled={!selectedProject} onClick={()=>{if(selectedProject)setLayer(1)}} className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${layer===1?(dark?'bg-blue-600/20 text-blue-400':'bg-blue-100 text-blue-700'):(dark?'text-gray-400 hover:text-gray-200':'text-gray-500 hover:text-gray-700')} ${!selectedProject?'opacity-40 cursor-not-allowed':''}`}>PM Detail</button>
-              <span className={dark?'text-gray-600':'text-gray-300'}>/</span>
-              <button onClick={handleGoExecutive} className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${layer===2?(dark?'bg-blue-600/20 text-blue-400':'bg-blue-100 text-blue-700'):(dark?'text-gray-400 hover:text-gray-200':'text-gray-500 hover:text-gray-700')}`}>Executive</button>
-            </div>
-            {/* Theme toggle */}
-            <button onClick={()=>setDark(!dark)} className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${dark?'bg-slate-700 hover:bg-slate-600 text-yellow-400':'bg-gray-200 hover:bg-gray-300 text-blue-600'}`}>
-              {dark?'\u2600\uFE0F':'\uD83C\uDF19'}
-            </button>
-          </div>
+    {/* Cash Flow + Risk Register + Actions */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+      <div className="section-card">
+        <SectionTitle icon="💵" title="Cash flow"/>
+        <div style={{height:160}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={p.cashFlow} margin={{top:5,right:5,bottom:5,left:5}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+              <XAxis dataKey="q" tick={{fontSize:9,fill:"#64748b"}}/>
+              <YAxis tick={{fontSize:9,fill:"#64748b"}} tickFormatter={v=>"$"+Math.round(v/1e6)+"M"}/>
+              <Bar dataKey="planned" fill="#22c55e" barSize={14} radius={[2,2,0,0]}/>
+              <Bar dataKey="actual" fill="#3b82f6" barSize={14} radius={[2,2,0,0]}/>
+              <Bar dataKey="forecast" fill="#f59e0b" barSize={14} radius={[2,2,0,0]}/>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="pt-16">
-        {layer===0 && <Layer0_ProjectHealth onSelectProject={handleSelectProject} onGoExecutive={handleGoExecutive} dark={dark}/>}
-        {layer===1 && selectedProject && <Layer1_ProjectDetail project={selectedProject} onBack={handleBackToProjects} dark={dark}/>}
-        {layer===2 && <Layer2_Executive onBack={handleBackToProjects} dark={dark}/>}
+      <div className="section-card">
+        <SectionTitle icon="⚠️" title="Risk register" badges={["Smart PM","Airtable"]}/>
+        {(p.risks||[]).slice(0,3).map((r,i)=>(
+          <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:"1px solid #1e293b",fontSize:11}}>
+            <div style={{display:"flex",gap:6,alignItems:"center"}}><span style={{fontWeight:800,color:"#64748b"}}>{r.id}</span><span style={{maxWidth:160}}>{r.desc.substring(0,40)}</span></div>
+            <div style={{display:"flex",gap:4,alignItems:"center"}}><span style={{color:sevColor(r.severity),fontWeight:700,fontSize:10}}>{r.severity}</span><span style={{fontSize:9,color:"#64748b"}}>{r.schedImpact?.replace("+","")}</span></div>
+          </div>
+        ))}
+        {p.risks?.some(r=>r.severity==="Critical") && <div style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.3)",borderRadius:4,padding:"6px 10px",marginTop:8,fontSize:10,color:"#fca5a5"}}>⚠ {p.risks.filter(r=>r.severity==="Critical").length} high-severity risk(s). Requires immediate executive escalation.</div>}
+      </div>
+
+      <div className="section-card">
+        <SectionTitle icon="✅" title="Actions & decisions required"/>
+        {(p.actions||[]).map((a,i)=>(
+          <div key={i} style={{padding:"6px 0",borderBottom:"1px solid #1e293b"}}>
+            <div style={{display:"flex",gap:6,alignItems:"flex-start"}}><input type="checkbox" checked={a.done} readOnly style={{marginTop:2}}/><div><div style={{fontSize:11,color:"#e2e8f0"}}>{a.text}</div><div style={{fontSize:9,color:"#64748b"}}>{a.owner && <span className="badge badge-blue" style={{fontSize:8,marginRight:4}}>{a.owner}</span>}<span style={{color:a.due?.includes("URGENT")?"#ef4444":"#f59e0b"}}>{a.due}</span></div></div></div>
+          </div>
+        ))}
+        {(!p.actions||p.actions.length===0) && <div style={{color:"#64748b",fontSize:11,textAlign:"center",padding:12}}>No pending actions</div>}
+      </div>
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+//  LEGEND OVERLAY
+// ═══════════════════════════════════════════════════════════════
+const LegendOverlay = ({onClose}) => (
+  <div className="legend-overlay fade-in">
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+      <div><h2 style={{fontSize:18,fontWeight:800}}>Dashboard legend</h2><div style={{fontSize:12,color:"#64748b"}}>How to read every color, icon, and indicator</div></div>
+      <button onClick={onClose} style={{background:"none",border:"none",color:"#94a3b8",fontSize:20,cursor:"pointer"}}>✕</button>
+    </div>
+    <div style={{marginBottom:20}}>
+      <h3 style={{fontSize:12,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Overall RAG Status</h3>
+      <p style={{fontSize:10,color:"#64748b",marginBottom:8}}>Drives the left border color and badge on every project card</p>
+      {[["On track — Green","SPI ≥ 0.95 · Budget ≤ +2% · No critical path delay · TRIR < 1.0","#22c55e"],["At risk — Amber","SPI 0.85–0.94 · Budget +2 to +5% · Schedule float < 10d · TRIR 1.0–1.5","#f59e0b"],["Critical — Red","SPI < 0.85 · Budget > +5% · Off critical path · TRIR > 1.5 · LLE blocked","#ef4444"]].map(([t,d,c])=>(
+        <div key={t} style={{marginBottom:8,padding:"8px 12px",background:"#0f172a",borderRadius:6,borderLeft:`3px solid ${c}`}}>
+          <div style={{fontSize:12,fontWeight:700,color:c}}>{t}</div>
+          <div style={{fontSize:10,color:"#94a3b8"}}>{d}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{marginBottom:20}}>
+      <h3 style={{fontSize:12,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Project Phase</h3>
+      <p style={{fontSize:10,color:"#64748b",marginBottom:8}}>Shown as a badge on each card. Progress bar shows % design or % construction complete</p>
+      {[["Construction","Active construction on site. TRIR, Gantt, and site safety metrics are active. SPI sourced from Smart PM / P6."],["Design","Pre-construction — design and procurement phases. TRIR shows N/A. Progress = % design packages released."]].map(([t,d])=>(
+        <div key={t} style={{marginBottom:6,padding:"6px 10px",background:"#0f172a",borderRadius:4}}>
+          <div style={{fontSize:11,fontWeight:700}}>{t}</div>
+          <div style={{fontSize:10,color:"#94a3b8"}}>{d}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{marginBottom:20}}>
+      <h3 style={{fontSize:12,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Delivery Type</h3>
+      <p style={{fontSize:10,color:"#64748b",marginBottom:8}}>Defines the scope of Surestone's responsibility on the project</p>
+      {[["Turnkey","Full design-build. Surestone is responsible for complete facility delivery including fit-out, MEP, and commissioning."],["Core & Shell","Structure and base building envelope only. Client takes responsibility for interior fit-out and tenant improvements."]].map(([t,d])=>(
+        <div key={t} style={{marginBottom:6,padding:"6px 10px",background:"#0f172a",borderRadius:4}}>
+          <div style={{fontSize:11,fontWeight:700}}>{t}</div>
+          <div style={{fontSize:10,color:"#94a3b8"}}>{d}</div>
+        </div>
+      ))}
+    </div>
+    <div>
+      <h3 style={{fontSize:12,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Card Domain Icons — S · $ · SF</h3>
+      <p style={{fontSize:10,color:"#64748b",marginBottom:8}}>The three icons at the bottom of every project card give an at-a-glance health check across the three most critical domains. Each is independently RAG-rated.</p>
+      {[["S — Schedule","Based on SPI (Schedule Performance Index) and critical path float. Source: Smart PM + Primavera P6"],["$ — Cost / Budget","Based on CPI, EAC vs BAC variance, and contingency burn rate. Source: Coupa + Smart PM"],["SF — Safety","Based on TRIR (Total Recordable Incident Rate), IFD streak, and near-miss trends. Source: Procore"]].map(([t,d])=>(
+        <div key={t} style={{marginBottom:6,padding:"6px 10px",background:"#0f172a",borderRadius:4}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#f59e0b"}}>{t}</div>
+          <div style={{fontSize:10,color:"#94a3b8"}}>{d}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+//  APP — MAIN NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+const App = () => {
+  const [view, setView] = useState("portfolio"); // portfolio | project | executive | onepager
+  const [selectedProject, setSelectedProject] = useState(PROJECTS[0]);
+  const [showLegend, setShowLegend] = useState(false);
+
+  const handleSelectProject = (p) => { setSelectedProject(p); setView("project"); };
+
+  return (
+    <div style={{minHeight:"100vh",background:"#0a0e17"}}>
+      {/* Top Nav Bar */}
+      <div style={{background:"#0f1629",borderBottom:"1px solid #1e293b",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 0"}}>
+            <div style={{width:32,height:32,borderRadius:6,background:"linear-gradient(135deg,#3b82f6,#1d4ed8)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:"#fff"}}>SD</div>
+            <div><div style={{fontSize:14,fontWeight:800,color:"#e2e8f0"}}>{COMPANY}</div><div style={{fontSize:9,color:"#64748b",textTransform:"uppercase",letterSpacing:1}}>{COMPANY_SUB}</div></div>
+          </div>
+          <div style={{display:"flex",gap:0,marginLeft:16}}>
+            <div className={`nav-tab ${view==="portfolio"?"active":""}`} onClick={()=>setView("portfolio")}>Portfolio status</div>
+            <div className={`nav-tab ${view==="project"?"active":""}`} onClick={()=>setView("project")}>Project — {selectedProject.code}</div>
+            <div className={`nav-tab ${view==="executive"?"active":""}`} onClick={()=>setView("executive")}>Executive management</div>
+            <div className={`nav-tab ${view==="onepager"?"active":""}`} onClick={()=>setView("onepager")}>Exec one-pager · {selectedProject.code}</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <span style={{fontSize:11,color:"#64748b"}}>Data as of: {DATA_DATE}</span>
+          <span style={{display:"flex",gap:4,fontSize:10}}>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:6,height:6,borderRadius:"50%",background:"#22c55e"}}/>On track</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:6,height:6,borderRadius:"50%",background:"#f59e0b"}}/>At risk</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:6,height:6,borderRadius:"50%",background:"#ef4444"}}/>Critical</span>
+          </span>
+          <span style={{fontSize:11,color:"#94a3b8",cursor:"pointer",textDecoration:"underline"}} onClick={()=>setShowLegend(true)}>Legend ↗</span>
+          <span style={{fontSize:11,color:"#94a3b8",cursor:"pointer"}} onClick={()=>window.location.reload()}>↻ Refresh</span>
+          <div style={{width:28,height:28,borderRadius:"50%",background:"#1e293b",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14}}>☀</div>
+        </div>
+      </div>
+
+      {/* Blue progress line under nav */}
+      <div style={{height:3,background:"#1e293b"}}><div style={{height:"100%",width:`${avgComplete}%`,background:"linear-gradient(90deg,#3b82f6,#22c55e)",transition:"width 1s ease"}}/></div>
+
+      {/* Main Content */}
+      <div style={{padding:"16px 0"}}>
+        {view === "portfolio" && <PortfolioStatus onSelectProject={handleSelectProject}/>}
+        {view === "project" && <ProjectDetail project={selectedProject}/>}
+        {view === "executive" && <ExecutiveManagement/>}
+        {view === "onepager" && <ExecOnePager project={selectedProject}/>}
       </div>
 
       {/* Footer */}
-      <div className={`text-center py-6 text-xs ${dark?'text-gray-600':'text-gray-400'}`}>
-        Rowan Digital &copy; 2026 &middot; Project Management Dashboard v2.0 &middot; Confidential
+      <div style={{borderTop:"1px solid #1e293b",padding:"10px 24px",display:"flex",justifyContent:"space-between",fontSize:10,color:"#475569"}}>
+        <span>© {COMPANY} 2026 — Project Management Dashboard v3.0 — Confidential</span>
+        <span>↗ Executive view &nbsp; 📄 Export PDF</span>
       </div>
+
+      {/* Legend Overlay */}
+      {showLegend && <LegendOverlay onClose={()=>setShowLegend(false)}/>}
+      {showLegend && <div onClick={()=>setShowLegend(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,.5)",zIndex:99}}/>}
     </div>
   );
 };
