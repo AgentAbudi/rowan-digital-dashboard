@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surestone Development — Data Center Portfolio</title>
+    <title>Surestone Development — Project Portfolio</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
@@ -64,7 +64,7 @@ const {LineChart,Line,AreaChart,Area,BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis,
 //  DATA — SURESTONE DEVELOPMENT COMPANY
 // ═══════════════════════════════════════════════════════════════
 const COMPANY = "Surestone Development";
-const COMPANY_SUB = "DATA CENTER DEVELOPMENT PORTFOLIO";
+const COMPANY_SUB = "DEVELOPMENT PORTFOLIO";
 const DATA_DATE = "Apr 27, 2026";
 const WEEK = "Week 17";
 
@@ -72,8 +72,7 @@ const PROJECTS = [
   {
     id:1, code:"THR01", name:"Al Thuraya", location:"Dubai, UAE", campus:"Al Thuraya Campus",
     type:"Turnkey", phase:"Construction", contractValue:572000000, budget:572000000,
-    startDate:"Jan 15, 2025", completion:"Q4 2027", totalPower:"FBD", grossFloor:"~93 Sf",
-    tier:"-", halls:"-", upsConfig:"-", coolingType:"-", generator:"-", itLoad:"-",
+    startDate:"Jan 15, 2025", completion:"Q4 2027", grossFloor:"~93,000 Sf",
     spiHistory:[0.98,0.97,0.95,0.93], cpiVal:0.98, spiVal:0.93,
     percentComplete:74, designComplete:100, constructionComplete:74,
     eac:584000000, bac:572000000, trir:0.74, ifdStreak:54, nearMisses:1,
@@ -99,10 +98,10 @@ const PROJECTS = [
     ],
     procurement:[
       {po:"PO-7421",desc:"Main switchgear — 15kV LV boards (×4)",vendor:"ABB",value:4200000,leadTime:"52wk",orderDate:"Nov 5, 2025",delivery:"Critical delay",status:"Critical delay"},
-      {po:"PO-7388",desc:"Diesel generators — 2MW units (×6)",vendor:"Caterpillar",value:6800000,leadTime:"18wk",orderDate:"May 14, 2025",delivery:"Delivered",status:"Delivered"},
-      {po:"PO-7456",desc:"UPS systems — 2N redundant (×8)",vendor:"Eaton",value:5100000,leadTime:"24wk",orderDate:"Jul 28, 2025",delivery:"At risk",status:"At risk"},
+      {po:"PO-7388",desc:"Emergency backup generators (×6)",vendor:"Caterpillar",value:6800000,leadTime:"18wk",orderDate:"May 14, 2025",delivery:"Delivered",status:"Delivered"},
+      {po:"PO-7456",desc:"Electrical distribution panels (×8)",vendor:"Eaton",value:5100000,leadTime:"24wk",orderDate:"Jul 28, 2025",delivery:"At risk",status:"At risk"},
       {po:"PO-7398",desc:"Structural steel package — Hall B",vendor:"Nucor",value:12400000,leadTime:"14wk",orderDate:"Apr 28, 2025",delivery:"On site",status:"On site"},
-      {po:"PO-7471",desc:"Cooling tower units (×4)",vendor:"Evapco",value:3600000,leadTime:"20wk",orderDate:"Jun 23, 2025",delivery:"Ordered",status:"Ordered"},
+      {po:"PO-7471",desc:"HVAC chiller units (×4)",vendor:"Evapco",value:3600000,leadTime:"20wk",orderDate:"Jun 23, 2025",delivery:"Ordered",status:"Ordered"},
       {po:"PO-7482",desc:"Curtain wall glazing — Hall A",vendor:"Guardian",value:2800000,leadTime:"12wk",orderDate:"Aug 4, 2025",delivery:"Ordered",status:"Ordered"}
     ],
     milestones:[
@@ -158,20 +157,20 @@ const PROJECTS = [
     percentComplete:61, designComplete:100, constructionComplete:61,
     eac:695000000, bac:634000000, trir:0.91,
     activeWorkers:195, targetWorkers:220,
-    openRFIs:6, highPriorityRFIs:3, lleAtRisk:1, lleDetail:"Generators +8wks",
+    openRFIs:6, highPriorityRFIs:3, lleAtRisk:1, lleDetail:"Backup power +8wks",
     changeOrders:6, coImpact:12000000, coSchedule:"+18d",
     inspectionPassRate:92, contingencyTotal:18000000, contingencyUsed:12000000,
     status:"Critical",
     risks:[
-      {id:"R-01",desc:"Generator delivery delay — customs hold",cat:"Procurement",severity:"Critical",costImpact:"+$6M",schedImpact:"+8wk",owner:"Procurement Lead",mitigation:"Expediting with port authority"},
+      {id:"R-01",desc:"Backup power equipment delay — customs hold",cat:"Procurement",severity:"Critical",costImpact:"+$6M",schedImpact:"+8wk",owner:"Procurement Lead",mitigation:"Expediting with port authority"},
       {id:"R-02",desc:"Foundation settlement — Hall B sector 3",cat:"Structural",severity:"High",costImpact:"+$3M",schedImpact:"+14d",owner:"Structural Eng",mitigation:"Geotechnical review underway"},
       {id:"R-03",desc:"Labor shortage — electrical trades",cat:"Resources",severity:"High",costImpact:"+$2M",schedImpact:"+10d",owner:"Construction Mgr",mitigation:"Subcontractor mobilization from mainland"},
       {id:"R-04",desc:"Permit renewal pending — environmental",cat:"Regulatory",severity:"Medium",costImpact:"+$0.5M",schedImpact:"+5d",owner:"PM",mitigation:"Application submitted, awaiting review"}
     ],
     tradeProgress:{MEP:45,Steel:68,Electrical:38,Civil:82},
     cashFlow:[{q:"Q1",planned:150000000,actual:142000000},{q:"Q2",planned:170000000,actual:160000000},{q:"Q3",planned:180000000,actual:null,forecast:185000000},{q:"Q4 Fcst",planned:140000000,actual:null,forecast:148000000}],
-    milestones:[{name:"Site prep & piling",status:"Complete"},{name:"Foundation — all halls",status:"Complete"},{name:"Steel erection — Hall A",status:"In progress",date:"72%"},{name:"Generator delivery",status:"BLOCKED"},{name:"MEP rough-in",status:"Planned"},{name:"Commissioning",status:"Planned",date:"Q2 2027"}],
-    lookAhead:[{name:"Steel erection — Hall A",status:"In progress",pct:72},{name:"Foundation remediation — Hall B",status:"In progress",pct:40},{name:"Generator customs clearance",status:"BLOCKED",pct:0},{name:"Electrical rough-in — Hall A",status:"Planned",pct:0}],
+    milestones:[{name:"Site prep & piling",status:"Complete"},{name:"Foundation — all halls",status:"Complete"},{name:"Steel erection — Hall A",status:"In progress",date:"72%"},{name:"Equipment delivery",status:"BLOCKED"},{name:"MEP rough-in",status:"Planned"},{name:"Commissioning",status:"Planned",date:"Q2 2027"}],
+    lookAhead:[{name:"Steel erection — Hall A",status:"In progress",pct:72},{name:"Foundation remediation — Hall B",status:"In progress",pct:40},{name:"Equipment customs clearance",status:"BLOCKED",pct:0},{name:"Electrical rough-in — Hall A",status:"Planned",pct:0}],
     schedule_rag:"Critical", cost_rag:"Critical", safety_rag:"On track", overall_rag:"Critical"
   },
   {
@@ -235,15 +234,15 @@ const PROJECTS = [
     percentComplete:71, designComplete:100, constructionComplete:71,
     eac:830000000, bac:660000000, trir:0.72,
     activeWorkers:260, targetWorkers:300,
-    openRFIs:9, highPriorityRFIs:4, lleAtRisk:2, lleDetail:"UPS +10wks, HVAC +6wks",
+    openRFIs:9, highPriorityRFIs:4, lleAtRisk:2, lleDetail:"Electrical +10wks, HVAC +6wks",
     changeOrders:8, coImpact:25000000, coSchedule:"+22d",
     inspectionPassRate:91, contingencyTotal:20000000, contingencyUsed:18000000,
     status:"Critical",
-    risks:[{id:"R-01",desc:"UPS delivery — factory fire at supplier",cat:"Procurement",severity:"Critical",costImpact:"+$12M",schedImpact:"+10wk",owner:"Procurement Lead",mitigation:"Emergency procurement from alternate vendor"},{id:"R-02",desc:"HVAC chiller units delayed",cat:"Procurement",severity:"High",costImpact:"+$5M",schedImpact:"+6wk",owner:"Procurement Lead",mitigation:"Expediting fee approved"},{id:"R-03",desc:"Budget overrun — contingency nearly depleted",cat:"Cost",severity:"Critical",costImpact:"+$25M",schedImpact:"N/A",owner:"Cost Controller",mitigation:"Executive review requested"}],
+    risks:[{id:"R-01",desc:"Electrical panel delivery — factory fire at supplier",cat:"Procurement",severity:"Critical",costImpact:"+$12M",schedImpact:"+10wk",owner:"Procurement Lead",mitigation:"Emergency procurement from alternate vendor"},{id:"R-02",desc:"HVAC chiller units delayed",cat:"Procurement",severity:"High",costImpact:"+$5M",schedImpact:"+6wk",owner:"Procurement Lead",mitigation:"Expediting fee approved"},{id:"R-03",desc:"Budget overrun — contingency nearly depleted",cat:"Cost",severity:"Critical",costImpact:"+$25M",schedImpact:"N/A",owner:"Cost Controller",mitigation:"Executive review requested"}],
     tradeProgress:{MEP:55,Steel:85,Electrical:48,Civil:92},
     cashFlow:[{q:"Q1",planned:160000000,actual:170000000},{q:"Q2",planned:180000000,actual:195000000},{q:"Q3",planned:190000000,actual:null,forecast:210000000},{q:"Q4 Fcst",planned:140000000,actual:null,forecast:165000000}],
-    milestones:[{name:"Foundation",status:"Complete"},{name:"Steel erection",status:"Complete"},{name:"MEP rough-in",status:"In progress",date:"55%"},{name:"UPS installation",status:"BLOCKED"},{name:"HVAC installation",status:"At risk"},{name:"Commissioning",status:"Planned",date:"Q1 2028"}],
-    lookAhead:[{name:"MEP rough-in — all halls",status:"In progress",pct:55},{name:"Electrical — main switchboard",status:"In progress",pct:40},{name:"UPS procurement",status:"BLOCKED",pct:0},{name:"HVAC chiller delivery",status:"At risk",pct:0}],
+    milestones:[{name:"Foundation",status:"Complete"},{name:"Steel erection",status:"Complete"},{name:"MEP rough-in",status:"In progress",date:"55%"},{name:"Electrical installation",status:"BLOCKED"},{name:"HVAC installation",status:"At risk"},{name:"Final commissioning",status:"Planned",date:"Q1 2028"}],
+    lookAhead:[{name:"MEP rough-in — all buildings",status:"In progress",pct:55},{name:"Electrical — main switchboard",status:"In progress",pct:40},{name:"Distribution panel procurement",status:"BLOCKED",pct:0},{name:"HVAC chiller delivery",status:"At risk",pct:0}],
     schedule_rag:"Critical", cost_rag:"Critical", safety_rag:"On track", overall_rag:"Critical"
   },
   {
@@ -867,7 +866,7 @@ const LegendOverlay = ({onClose}) => (
     <div style={{marginBottom:20}}>
       <h3 style={{fontSize:12,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Delivery Type</h3>
       <p style={{fontSize:10,color:"#64748b",marginBottom:8}}>Defines the scope of Surestone's responsibility on the project</p>
-      {[["Turnkey","Full design-build. Surestone is responsible for complete facility delivery including fit-out, MEP, and commissioning."],["Core & Shell","Structure and base building envelope only. Client takes responsibility for interior fit-out and tenant improvements."]].map(([t,d])=>(
+      {[["Turnkey","Full design-build. Surestone is responsible for complete facility delivery including interior works, MEP, and final handover."],["Core & Shell","Structure and base building envelope only. Client takes responsibility for interior works and tenant improvements."]].map(([t,d])=>(
         <div key={t} style={{marginBottom:6,padding:"6px 10px",background:"#0f172a",borderRadius:4}}>
           <div style={{fontSize:11,fontWeight:700}}>{t}</div>
           <div style={{fontSize:10,color:"#94a3b8"}}>{d}</div>
